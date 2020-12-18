@@ -25,6 +25,8 @@ Contact: Guillaume.Huard@imag.fr
 #include <stdint.h>
 #include <sys/types.h>
 
+#include <stdlib.h>
+#include <stdio.h>
 /**
  * @file memory.h
  * @author Guillame, Vincent
@@ -116,4 +118,6 @@ int memory_write_half(memory mem, uint32_t address, uint16_t value);
  */
 int memory_write_word(memory mem, uint32_t address, uint32_t value);
 
+
+void afficher_memoire(memory m);
 #endif

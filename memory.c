@@ -67,23 +67,20 @@ void memory_destroy(memory mem) {
 }
 
 int memory_read_byte(memory mem, uint32_t address, uint8_t *value) {
+
     int i = 0;
     int retour = 0;
-    
-    while (i < mem->nb_elem && mem->data[i].adresse != address)
+    printf("\nlire : adresse : %d\n",address);
+    afficher_memoire(mem);   
+    while (i <= mem->nb_elem && mem->data[i].adresse != address)
     {
+        printf("adresse : %d, valeur : %d \n",mem->data[i].adresse,mem->data[i].valeur);
         i++;
     }
     if (mem->data[i].adresse == address)
     {
-        if (mem->is_big_endian)
-        {
-            *value = (uint8_t)(mem->data[i].valeur >> 24);
-        }
-        else
-        {
-            *value = (uint8_t)mem->data[i].valeur;
-        }
+        printf("val lue adresse : %d, valeur : %d \n",mem->data[i].adresse,mem->data[i].valeur);
+        *value = (uint8_t)(mem->data[i].valeur);
         retour = 0;
     }
     else
@@ -91,7 +88,7 @@ int memory_read_byte(memory mem, uint32_t address, uint8_t *value) {
         retour = 1;
     }
         
-    
+ 
     return retour;
 }
 
@@ -102,6 +99,7 @@ int memory_read_half(memory mem, uint32_t address, uint16_t *value) {
     while (i < mem->nb_elem && mem->data[i].adresse != address)
     {
         i++;
+        
     }
     if (mem->data[i].adresse == address)
     {
@@ -140,24 +138,28 @@ int memory_read_word(memory mem, uint32_t address, uint32_t *value) {
 }
 
 int memory_write_byte(memory mem, uint32_t address, uint8_t value) {
+    printf("\necrire : adresse : %d, value : %d\n",address,value);
+    afficher_memoire(mem); 
     int i = 0;
     int retour = 0;
     while (i < mem->nb_elem && address != mem->data[i].adresse)
     {
+        printf("lire_ecrit : adresse : %d, value : %d\n", mem->data[i].adresse,mem->data[i].valeur);
         i++;
     }
-    if (address == mem->data[i].adresse)
+    if (i < mem->nb_elem)
     {
         mem->data[i].valeur = (uint32_t)value;
         retour = 0;
     }
     else
     {
-        if (mem->nb_elem+1 < mem->taille)
+        if (mem->nb_elem+1 <= mem->taille)
         {
+            printf("nb_elem : %ld ",mem->nb_elem);
             mem->data[mem->nb_elem].valeur = (uint32_t)value;
             mem->data[mem->nb_elem].adresse = address;
-            mem->nb_elem++;
+            mem->nb_elem = mem->nb_elem + 1;
             retour = 0;
         }
         else
@@ -186,7 +188,7 @@ int memory_write_half(memory mem, uint32_t address, uint16_t value) {
         {
             mem->data[mem->nb_elem].valeur = (uint32_t)value;
             mem->data[mem->nb_elem].adresse = address;
-            mem->nb_elem++;
+            mem->nb_elem = mem->nb_elem + 1;
             retour = 0;
         }
         else
@@ -215,7 +217,7 @@ int memory_write_word(memory mem, uint32_t address, uint32_t value) {
         {
             mem->data[mem->nb_elem].valeur = (uint32_t)value;
             mem->data[mem->nb_elem].adresse = address;
-            mem->nb_elem++;
+            mem->nb_elem = mem->nb_elem + 1;
             retour = 0;
         }
         else
@@ -224,4 +226,16 @@ int memory_write_word(memory mem, uint32_t address, uint32_t value) {
         }
     }
      return retour;
+}
+
+
+void afficher_memoire(memory m)
+{
+    printf("\n valeur memoire : \n");
+    int i = 0;
+    for (i = 0; i < m->nb_elem; i++)
+    {
+        printf("indice : %d, valeur : %d, adresse : %d \n",i,m->data[i].valeur,m->data[i].adresse);
+    }
+    printf("\n");
 }
