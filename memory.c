@@ -148,14 +148,14 @@ int memory_write_byte(memory mem, uint32_t address, uint8_t value) {
     }
     if (address == mem->data[i].adresse)
     {
-        mem->data[i].valeur = value;
+        mem->data[i].valeur = (uint32_t)value;
         retour = 0;
     }
     else
     {
         if (mem->nb_elem+1 < mem->taille)
         {
-            mem->data[mem->nb_elem].valeur = value;
+            mem->data[mem->nb_elem].valeur = (uint32_t)value;
             mem->data[mem->nb_elem].adresse = address;
             mem->nb_elem++;
             retour = 0;
@@ -177,14 +177,14 @@ int memory_write_half(memory mem, uint32_t address, uint16_t value) {
     }
     if (address == mem->data[i].adresse)
     {
-        mem->data[i].valeur = value;
+        mem->data[i].valeur = (uint32_t)value;
         retour = 0;
     }
     else
     {
         if (mem->nb_elem+1 < mem->taille)
         {
-            mem->data[mem->nb_elem].valeur = value;
+            mem->data[mem->nb_elem].valeur = (uint32_t)value;
             mem->data[mem->nb_elem].adresse = address;
             mem->nb_elem++;
             retour = 0;
@@ -206,14 +206,14 @@ int memory_write_word(memory mem, uint32_t address, uint32_t value) {
     }
     if (address == mem->data[i].adresse)
     {
-        mem->data[i].valeur = value;
+        mem->data[i].valeur = (uint32_t)value;
         retour = 0;
     }
     else
     {
         if (mem->nb_elem+1 < mem->taille)
         {
-            mem->data[mem->nb_elem].valeur = value;
+            mem->data[mem->nb_elem].valeur = (uint32_t)value;
             mem->data[mem->nb_elem].adresse = address;
             mem->nb_elem++;
             retour = 0;

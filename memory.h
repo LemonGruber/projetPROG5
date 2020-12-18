@@ -30,6 +30,7 @@ Contact: Guillaume.Huard@imag.fr
  * @author Guillame, Vincent
  * @date 18/12/2020
  * @brief gestion de la memoire (lecture, creation, modif)
+ * @bug Attention gestion big endian, little endian
  */
 typedef struct memory_data *memory;
 
