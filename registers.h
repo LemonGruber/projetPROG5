@@ -52,16 +52,34 @@ void registers_destroy(registers r);
  * @brief renvoie le mode actuel du registre
  */
 uint8_t get_mode(registers r);
+
+/**
+ * @param r un registre de la forme de structure registers
+ * @return 1 si le mode peut lire le registre spsr 0 sinon
+ * @brief permet de savoir si on peut lire le registre spsr 
+ */
 int current_mode_has_spsr(registers r);
+
+/**
+ * @param r un registre de la forme de structure registers
+ * @return 1 si le mode est un mode privilegier 0 sinon
+ * @brief permet de savoir si on est en mode privilegier
+ */
 int in_a_privileged_mode(registers r);
 
+/**
+ * @param r un registre de la forme de structure registers
+ * @param reg l'indice d'un registre
+ * @return la valeur du registre reg
+ * @brief permet de lire la valeur d'un registre donner 
+ */
 uint32_t read_register(registers r, uint8_t reg);
 
 /**
  * @param r un registre de la forme registers
  * @param reg un numero de registre
  * @return la valeur d'un registre reg dans r
- * @brief lis la valeur d'un registre donner
+ * @brief lis la valeur d'un registre donner utilisable par user
  */
 uint32_t read_usr_register(registers r, uint8_t reg);
 
@@ -79,14 +97,19 @@ uint32_t read_cpsr(registers r);
  */
 uint32_t read_spsr(registers r);
 
-
+/**
+ * @param r un registre de la forme registers
+ * @param reg
+ * @param value la valeur a mettre dans le registe
+ * @brief met la valeur donner dans le registre voulu
+ */
 void write_register(registers r, uint8_t reg, uint32_t value);
 
 /**
  * @param r un registre de la forme registers
  * @param reg un numero de registre
  * @param value la valeur a mettre dans le registe
- * @brief met la valeur donner dans le registre voulu
+ * @brief met la valeur donner dans le registre user voulu 
  */
 void write_usr_register(registers r, uint8_t reg, uint32_t value);
 

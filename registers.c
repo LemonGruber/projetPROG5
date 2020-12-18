@@ -74,16 +74,106 @@ uint8_t get_mode(registers r) {
     return r->mode;
 } 
 
+
 int current_mode_has_spsr(registers r) {
-    return 0;
+    int retour = 0;
+    switch (get_mode(r)) {
+        case SVC:
+        case ABT:
+        case UND:
+        case IRQ:
+        case FIQ:
+            retour = 1;
+        break;
+        default:
+            retour = 0;
+    }
+    
+    return retour;
 }
 
 int in_a_privileged_mode(registers r) {
-    return 0;
+    int retour = 0;
+    switch (get_mode(r)) {
+        case SVC:
+        case ABT:
+        case UND:
+        case IRQ:
+        case FIQ:
+        case SYS:
+            retour = 1;
+        break;
+        default:
+            retour = 0;
+    }
+    
+    return retour;
 }
 
 uint32_t read_register(registers r, uint8_t reg) {
     uint32_t value=0;
+    switch (reg)
+    {
+        case 0:
+            value=r->R0;
+        break;
+        case 1:
+            value=r->R1;
+        break;
+        case 2:
+            value=r->R2;
+        break;
+        case 3:
+            value=r->R3;
+        break;
+        case 4:
+            value=r->R4;
+        break;
+        case 5:
+            value=r->R5;
+        break;
+        case 6:
+            value=r->R6;
+        break;
+        case 7:
+            value=r->R7;
+        break;
+        case 8:
+            value=r->R8;
+        break;
+        case 9:
+            value=r->R9;
+        break;
+        case 10:
+            value=r->R10;
+        break;
+        case 11:
+            value=r->R11;
+        break;
+        case 12:
+            value=r->R12;
+        break;
+         case 13:
+            value=r->R13;
+        break;
+         case 14:
+            value=r->R14;
+        break;
+        case 15:
+            value=r->R15;
+        break;
+        case 16:
+            value=r->SPSR;
+        break;
+        case 17:
+            value=r->CPSR;
+        break;
+        case 18:
+            value=r->IR;
+        break;
+        default :
+            value=r->reg[reg-19];
+    }
     return value;
 }
 
@@ -159,6 +249,68 @@ uint32_t read_spsr(registers r) {
 }
 
 void write_register(registers r, uint8_t reg, uint32_t value) {
+    switch (reg)
+    {
+        case 0:
+            r->R0=value;
+        break;
+        case 1:
+            r->R1=value;
+        break;
+        case 2:
+            r->R2=value;
+        break;
+        case 3:
+            r->R3=value;
+        break;
+        case 4:
+            r->R4=value;
+        break;
+        case 5:
+            r->R5=value;
+        break;
+        case 6:
+            r->R6=value;
+        break;
+        case 7:
+            r->R7=value;
+        break;
+        case 8:
+            r->R8=value;
+        break;
+        case 9:
+            r->R9=value;
+        break;
+        case 10:
+            r->R10=value;
+        break;
+        case 11:
+            r->R11=value;
+        break;
+        case 12:
+            r->R12=value;
+        break;
+         case 13:
+            r->R13=value;
+        break;
+         case 14:
+            r->R14=value;
+        break;
+        case 15:
+            r->R15=value;
+        break;
+        case 16:
+            r->SPSR=value;
+        break;
+        case 17:
+            r->CPSR=value;
+        break;
+        case 18:
+            r->IR=value;
+        break;
+        default :
+            r->reg[reg-19]=value;
+    }
 }
 
 
