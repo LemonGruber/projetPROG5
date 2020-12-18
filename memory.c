@@ -24,25 +24,63 @@ Contact: Guillaume.Huard@imag.fr
 #include "memory.h"
 #include "util.h"
 
+/**
+ * @struct memoire
+ * @brief stock les valeur des memoires ainsi que son adresse
+ */
+struct memoire {
+ uint32_t adresse;
+ uint32_t valeur;
+}memoire;
+
+/**
+ * @struct memory_data
+ * @brief stock la taille, le type et la valeur de la memoire
+ */
 struct memory_data {
-    uint32_t adresse;
-    uint32_t valeur;
-};
+    size_t taille;
+    int is_big_endian;
+    struct memoire *data;
+}memory_data; 
 
 memory memory_create(size_t size, int is_big_endian) {
-    memory mem=NULL;
+    memory mem = NULL;
+    mem = malloc(sizeof(memory_data));
+    mem->taille = size;
+    mem->is_big_endian = is_big_endian;
+    mem->data = malloc(sizeof(memoire)*size);
     return mem;
 }
 
 size_t memory_get_size(memory mem) {
-    return 0;
+    return mem->taille;
 }
 
 void memory_destroy(memory mem) {
+    free(mem->data);
+    free(mem);
 }
 
 int memory_read_byte(memory mem, uint32_t address, uint8_t *value) {
-    return -1;
+    int i = 0;
+    int retour = 0;
+    
+    while (i < mem->taille && mem->data[i].adresse != address)
+    {
+        i++;
+    }
+    if (mem->data[i].adresse == address)
+    {
+        *value = (uint8_t)mem->data[i].valeur;
+        retour = 0;
+    }
+    else
+    {
+        retour = 1;
+    }
+        
+    
+    return retour;
 }
 
 int memory_read_half(memory mem, uint32_t address, uint16_t *value) {
