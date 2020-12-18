@@ -46,13 +46,13 @@ struct memory_data {
 
 memory memory_create(size_t size, int is_big_endian) {
     memory mem = NULL;
-    mem = malloc(sizeof(memory_data));
+    mem = (memory)malloc(sizeof(memory_data));
     if (mem != NULL)
     {
         mem->taille = size;
         mem->is_big_endian = is_big_endian;
         mem->nb_elem = 0;
-        mem->data = malloc(sizeof(memoire)*size);
+        mem->data = malloc(sizeof(memoire)*(size));
     }
     return mem;
 }
@@ -70,17 +70,13 @@ int memory_read_byte(memory mem, uint32_t address, uint8_t *value) {
 
     int i = 0;
     int retour = 0;
-    printf("\nlire : adresse : %d\n",address);
-    afficher_memoire(mem);   
     while (i <= mem->nb_elem && mem->data[i].adresse != address)
     {
-        printf("adresse : %d, valeur : %d \n",mem->data[i].adresse,mem->data[i].valeur);
         i++;
     }
     if (mem->data[i].adresse == address)
     {
-        printf("val lue adresse : %d, valeur : %d \n",mem->data[i].adresse,mem->data[i].valeur);
-        *value = (uint8_t)(mem->data[i].valeur);
+        *value = (uint8_t)mem->data[i].valeur;
         retour = 0;
     }
     else
@@ -93,22 +89,30 @@ int memory_read_byte(memory mem, uint32_t address, uint8_t *value) {
 }
 
 int memory_read_half(memory mem, uint32_t address, uint16_t *value) {
-    int i = 0;
+    *value = 0;
     int retour = 0;
     
-    while (i < mem->nb_elem && mem->data[i].adresse != address)
+    if (!mem->is_big_endian)
     {
-        i++;
-        
-    }
-    if (mem->data[i].adresse == address)
-    {
-        *value = (uint16_t)mem->data[i].valeur;
-        retour = 0;
+        if (address%32 == 0)
+        {
+            *value = (mem->data[address/32].valeur << 16) >> 16;
+        }
+        else if (address%16 == 0)
+        {
+            *value = (mem->data[address/32].valeur >> 16);
+        }
     }
     else
     {
-        retour = 1;
+        if (address%32 == 0)
+        {
+            *value = (mem->data[address/32].valeur >> 16);
+        }
+        else if (address%16 == 0)
+        {
+            *value = (mem->data[address/32].valeur << 16) >> 16;
+        }
     }
         
     
@@ -116,58 +120,60 @@ int memory_read_half(memory mem, uint32_t address, uint16_t *value) {
 }
 
 int memory_read_word(memory mem, uint32_t address, uint32_t *value) {
-    int i = 0;
+    *value = 0;
     int retour = 0;
-    
-    while (i < mem->nb_elem && mem->data[i].adresse != address)
-    {
-        i++;
-    }
-    if (mem->data[i].adresse == address)
-    {
-        *value = (uint32_t)mem->data[i].valeur;
-        retour = 0;
-    }
-    else
-    {
-        retour = 1;
-    }
-        
-    
+    *value = mem->data[address/32].valeur;
     return retour;
 }
 
 int memory_write_byte(memory mem, uint32_t address, uint8_t value) {
-    printf("\necrire : adresse : %d, value : %d\n",address,value);
-    afficher_memoire(mem); 
     int i = 0;
     int retour = 0;
-    while (i < mem->nb_elem && address != mem->data[i].adresse)
+    
+    uint32_t buff;
+    if (mem->is_big_endian)
     {
-        printf("lire_ecrit : adresse : %d, value : %d\n", mem->data[i].adresse,mem->data[i].valeur);
-        i++;
-    }
-    if (i < mem->nb_elem)
-    {
-        mem->data[i].valeur = (uint32_t)value;
-        retour = 0;
-    }
-    else
-    {
-        if (mem->nb_elem+1 <= mem->taille)
+        if (mem->nb_elem % 32 == 0)
         {
-            printf("nb_elem : %ld ",mem->nb_elem);
-            mem->data[mem->nb_elem].valeur = (uint32_t)value;
-            mem->data[mem->nb_elem].adresse = address;
-            mem->nb_elem = mem->nb_elem + 1;
-            retour = 0;
+            mem->data[mem->nb_elem/32].valeur = value;
+            mem->nb_elem = mem->nb_elem + 8;
         }
         else
         {
-            retour = 1;
+            mem->data[mem->nb_elem/32].valeur = mem->data[mem->nb_elem/32].valeur << 8;
+            mem->data[mem->nb_elem/32].valeur = mem->data[mem->nb_elem/32].valeur | value;
+            mem->nb_elem = mem->nb_elem + 8;
         }
     }
-     return retour;
+    else
+    {
+        
+         if (mem->nb_elem % 32 == 0)
+        {
+            mem->data[mem->nb_elem/32].valeur = value;
+            mem->nb_elem = mem->nb_elem + 8;
+        }
+         else if (mem->nb_elem % 24 == 0)
+        {
+            buff = value << 24;
+            mem->data[mem->nb_elem/32].valeur = mem->data[mem->nb_elem/32].valeur | buff;
+            mem->nb_elem = mem->nb_elem + 8;
+        }
+         else if (mem->nb_elem % 16 == 0)
+         {
+            buff = value << 16;
+            mem->data[mem->nb_elem/32].valeur = mem->data[mem->nb_elem/32].valeur | buff;
+            mem->nb_elem = mem->nb_elem + 8;
+         }
+         else
+         {
+             buff = value << 8;
+
+             mem->data[mem->nb_elem/32].valeur = mem->data[mem->nb_elem/32].valeur |  buff;
+             mem->nb_elem = mem->nb_elem + 8;
+         }
+    }
+    afficher_memoire( mem);
 }
 
 int memory_write_half(memory mem, uint32_t address, uint16_t value) {
@@ -200,32 +206,9 @@ int memory_write_half(memory mem, uint32_t address, uint16_t value) {
 }
 
 int memory_write_word(memory mem, uint32_t address, uint32_t value) {
-    int i = 0;
     int retour = 0;
-    while (i < mem->nb_elem && address != mem->data[i].adresse)
-    {
-        i++;
-    }
-    if (address == mem->data[i].adresse)
-    {
-        mem->data[i].valeur = (uint32_t)value;
-        retour = 0;
-    }
-    else
-    {
-        if (mem->nb_elem+1 < mem->taille)
-        {
-            mem->data[mem->nb_elem].valeur = (uint32_t)value;
-            mem->data[mem->nb_elem].adresse = address;
-            mem->nb_elem = mem->nb_elem + 1;
-            retour = 0;
-        }
-        else
-        {
-            retour = 1;
-        }
-    }
-     return retour;
+    value = mem->data[address/32].valeur;
+    return retour;
 }
 
 
@@ -233,9 +216,9 @@ void afficher_memoire(memory m)
 {
     printf("\n valeur memoire : \n");
     int i = 0;
-    for (i = 0; i < m->nb_elem; i++)
+    for (i = 0; i < m->nb_elem/32+1; i++)
     {
-        printf("indice : %d, valeur : %d, adresse : %d \n",i,m->data[i].valeur,m->data[i].adresse);
+        printf("indice : %d, valeur : %08x \n",i,m->data[i].valeur);
     }
     printf("\n");
 }
