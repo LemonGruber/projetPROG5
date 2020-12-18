@@ -38,7 +38,8 @@ struct memoire {
  * @brief stock la taille, le type et la valeur de la memoire
  */
 struct memory_data {
-    size_t taille;
+    size_t nb_elem;         //Nombre d'element charger dans la memoire
+    size_t taille;          //Taille de la memoire
     int is_big_endian;
     struct memoire *data;
 }memory_data; 
@@ -46,9 +47,13 @@ struct memory_data {
 memory memory_create(size_t size, int is_big_endian) {
     memory mem = NULL;
     mem = malloc(sizeof(memory_data));
-    mem->taille = size;
-    mem->is_big_endian = is_big_endian;
-    mem->data = malloc(sizeof(memoire)*size);
+    if (mem != NULL)
+    {
+        mem->taille = size;
+        mem->is_big_endian = is_big_endian;
+        mem->nb_elem = 0;
+        mem->data = malloc(sizeof(memoire)*size);
+    }
     return mem;
 }
 
@@ -65,13 +70,20 @@ int memory_read_byte(memory mem, uint32_t address, uint8_t *value) {
     int i = 0;
     int retour = 0;
     
-    while (i < mem->taille && mem->data[i].adresse != address)
+    while (i < mem->nb_elem && mem->data[i].adresse != address)
     {
         i++;
     }
     if (mem->data[i].adresse == address)
     {
-        *value = (uint8_t)mem->data[i].valeur;
+        if (mem->is_big_endian)
+        {
+            *value = (uint8_t)(mem->data[i].valeur >> 24);
+        }
+        else
+        {
+            *value = (uint8_t)mem->data[i].valeur;
+        }
         retour = 0;
     }
     else
@@ -84,21 +96,132 @@ int memory_read_byte(memory mem, uint32_t address, uint8_t *value) {
 }
 
 int memory_read_half(memory mem, uint32_t address, uint16_t *value) {
-    return -1;
+    int i = 0;
+    int retour = 0;
+    
+    while (i < mem->nb_elem && mem->data[i].adresse != address)
+    {
+        i++;
+    }
+    if (mem->data[i].adresse == address)
+    {
+        *value = (uint16_t)mem->data[i].valeur;
+        retour = 0;
+    }
+    else
+    {
+        retour = 1;
+    }
+        
+    
+    return retour;
 }
 
 int memory_read_word(memory mem, uint32_t address, uint32_t *value) {
-    return -1;
+    int i = 0;
+    int retour = 0;
+    
+    while (i < mem->nb_elem && mem->data[i].adresse != address)
+    {
+        i++;
+    }
+    if (mem->data[i].adresse == address)
+    {
+        *value = (uint32_t)mem->data[i].valeur;
+        retour = 0;
+    }
+    else
+    {
+        retour = 1;
+    }
+        
+    
+    return retour;
 }
 
 int memory_write_byte(memory mem, uint32_t address, uint8_t value) {
-    return -1;
+    int i = 0;
+    int retour = 0;
+    while (i < mem->nb_elem && address != mem->data[i].adresse)
+    {
+        i++;
+    }
+    if (address == mem->data[i].adresse)
+    {
+        mem->data[i].valeur = value;
+        retour = 0;
+    }
+    else
+    {
+        if (mem->nb_elem+1 < mem->taille)
+        {
+            mem->data[mem->nb_elem].valeur = value;
+            mem->data[mem->nb_elem].adresse = address;
+            mem->nb_elem++;
+            retour = 0;
+        }
+        else
+        {
+            retour = 1;
+        }
+    }
+     return retour;
 }
 
 int memory_write_half(memory mem, uint32_t address, uint16_t value) {
-    return -1;
+        int i = 0;
+    int retour = 0;
+    while (i < mem->nb_elem && address != mem->data[i].adresse)
+    {
+        i++;
+    }
+    if (address == mem->data[i].adresse)
+    {
+        mem->data[i].valeur = value;
+        retour = 0;
+    }
+    else
+    {
+        if (mem->nb_elem+1 < mem->taille)
+        {
+            mem->data[mem->nb_elem].valeur = value;
+            mem->data[mem->nb_elem].adresse = address;
+            mem->nb_elem++;
+            retour = 0;
+        }
+        else
+        {
+            retour = 1;
+        }
+    }
+     return retour;
 }
 
 int memory_write_word(memory mem, uint32_t address, uint32_t value) {
-    return -1;
+    int i = 0;
+    int retour = 0;
+    while (i < mem->nb_elem && address != mem->data[i].adresse)
+    {
+        i++;
+    }
+    if (address == mem->data[i].adresse)
+    {
+        mem->data[i].valeur = value;
+        retour = 0;
+    }
+    else
+    {
+        if (mem->nb_elem+1 < mem->taille)
+        {
+            mem->data[mem->nb_elem].valeur = value;
+            mem->data[mem->nb_elem].adresse = address;
+            mem->nb_elem++;
+            retour = 0;
+        }
+        else
+        {
+            retour = 1;
+        }
+    }
+     return retour;
 }

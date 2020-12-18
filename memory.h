@@ -61,12 +61,58 @@ void memory_destroy(memory mem);
  * The return value indicates a succes (0) or a failure (-1).
  */
 
-
+/**
+ * @param mem la memoire de la forme de structure memory
+ * @param address une adresse memoire de type uint32_t
+ * @param value une valeur de type uint8_t 
+ * @return 1 si la valeur n'a pas pu etre recuperer 0 si non
+ * @brief recuper une valeur sur 8 bytes dans la memoire
+ */
 int memory_read_byte(memory mem, uint32_t address, uint8_t *value);
+
+/**
+ * @param mem la memoire de la forme de structure memory
+ * @param address une adresse memoire de type uint32_t
+ * @param value une valeur de type uint16_t 
+ * @return 1 si la valeur n'a pas pu etre recuperer 0 si non
+ * @brief recuper une valeur sur 16 bytes dans la memoire
+ */
 int memory_read_half(memory mem, uint32_t address, uint16_t *value);
+
+/**
+ * @param mem la memoire de la forme de structure memory
+ * @param address une adresse memoire de type uint32_t
+ * @param value une valeur de type uint32_t 
+ * @return 1 si la valeur n'a pas pu etre recuperer 0 si non
+ * @brief recuper une valeur sur 32 bytes dans la memoire
+ */
 int memory_read_word(memory mem, uint32_t address, uint32_t *value);
+
+/**
+ * @param mem la memoire de la forme de structure memory
+ * @param address une adresse memoire de type uint32_t
+ * @param value une valeur de type uint8_t
+ * @return 1 si la valeur n'a pas pu etre recuperer 0 si non
+ * @brief ecrire dans la memoire la valeur donner a l'adresse donner
+ */
 int memory_write_byte(memory mem, uint32_t address, uint8_t value);
+
+/**
+ * @param mem la memoire de la forme de structure memory
+ * @param address une adresse memoire de type uint32_t
+ * @param value une valeur de type uint16_t
+ * @return 1 si la valeur n'a pas pu etre recuperer 0 si non
+ * @brief ecrire dans la memoire la valeur donner a l'adresse donner
+ */
 int memory_write_half(memory mem, uint32_t address, uint16_t value);
+
+/**
+ * @param mem la memoire de la forme de structure memory
+ * @param address une adresse memoire de type uint32_t
+ * @param value une valeur de type uint32_t
+ * @return 1 si la valeur n'a pas pu etre recuperer 0 si non
+ * @brief ecrire dans la memoire la valeur donner a l'adresse donner
+ */
 int memory_write_word(memory mem, uint32_t address, uint32_t value);
 
 #endif
