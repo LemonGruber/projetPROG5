@@ -20,6 +20,8 @@ Contact: Guillaume.Huard@imag.fr
 	 700 avenue centrale, domaine universitaire
 	 38401 Saint Martin d'H�res
 */
+
+
 #include "registers.h"
 #include "arm_constants.h"
 #include <stdlib.h>
@@ -55,29 +57,19 @@ struct registers_data {
   
 }registers_data;
 
-/**
- * @return un registre vide
- * @brief alloue la memoire pour les registre 
- */
+
 registers registers_create() {
     registers r = NULL;
     r = malloc(sizeof(registers_data));
     return r;
 }
 
-/**
- * @param r un registre de la forme de structure registers
- * @brief libere la memoire prise par les registres
- */
+
 void registers_destroy(registers r) {
     free(r);
 }
 
-/**
- * @param r un registre de la forme de structure registers
- * @return le mode du regsitre
- * @brief renvoie le mode actuel du registre
- */
+
 uint8_t get_mode(registers r) {
     return r->mode;
 } 
@@ -95,12 +87,7 @@ uint32_t read_register(registers r, uint8_t reg) {
     return value;
 }
 
-/**
- * @param r un registre de la forme registers
- * @param reg un numero de registre
- * @return la valeur d'un registre reg dans r
- * @brief lis la valeur d'un registre donner
- */
+
 uint32_t read_usr_register(registers r, uint8_t reg) {
     uint32_t value=0;
     switch (reg)
@@ -157,22 +144,14 @@ uint32_t read_usr_register(registers r, uint8_t reg) {
     return value;
 }
 
-/**
- * @param r un registre de la forme registers
- * @return la valeur du registre cpsr
- * @brief lis dans les registre le registe CPSR et renvoie sa valeur
- */
+
 uint32_t read_cpsr(registers r) {
     uint32_t value=0;
     value = r->CPSR;
     return value;
 }
 
-/**
- * @param r un registre de la forme registers
- * @return la valeur du registre spsr
- * @brief lis dans les registre le registe SPSR et renvoie sa valeur
- */
+
 uint32_t read_spsr(registers r) {
     uint32_t value=0;
     value = r->SPSR;
@@ -182,12 +161,7 @@ uint32_t read_spsr(registers r) {
 void write_register(registers r, uint8_t reg, uint32_t value) {
 }
 
-/**
- * @param r un registre de la forme registers
- * @param reg un numero de registre
- * @param value la valeur a mettre dans le registe
- * @brief met la valeur donner dans le registre voulu
- */
+
 void write_usr_register(registers r, uint8_t reg, uint32_t value) {
     switch (reg)
     {
@@ -242,8 +216,11 @@ void write_usr_register(registers r, uint8_t reg, uint32_t value) {
     }
 }
 
+
 void write_cpsr(registers r, uint32_t value) {
+    r->CPSR = value;
 }
 
 void write_spsr(registers r, uint32_t value) {
+    r->SPSR = value;
 }
