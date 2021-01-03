@@ -72,6 +72,7 @@ int memory_read_byte(memory mem, uint32_t address, uint8_t *value) {
 
     //printf("\n address : %d \n",address);
     //printf("big : %d \n",mem->is_big_endian);
+    //address += 4;
     if (mem->is_big_endian)
     {
         if ((address*8)  == 0)
@@ -240,23 +241,24 @@ int memory_write_half(memory mem, uint32_t address, uint16_t value) {
     
     uint32_t buff;
     //printf("big : %d \n",me m->is_big_endian);
+    //address += 4;
     if (mem->is_big_endian)
     {
         if (address == 0)
         {
             buff = value;
             buff = buff << 16;
-            mem->data[address/32].valeur = buff | (mem->data[address/32].valeur & ~(1 << 16));
+            mem->data[(address * 8)/32].valeur = buff | (mem->data[(address * 8)/32].valeur & ~(1 << 16));
         }
         else if ((address * 8) % 32 == 0)
         {
             buff = value;
             buff = buff << 16;
-            mem->data[address/32].valeur = buff | (mem->data[address/32].valeur & ~(1 << 16));
+            mem->data[(address * 8)/32].valeur = buff | (mem->data[(address * 8)/32].valeur & ~(1 << 16));
         }
         else if ((address * 8) % 16 == 0)
         {
-            mem->data[address/32].valeur = value | (mem->data[address/32].valeur & 0x00);
+            mem->data[(address * 8)/32].valeur = value | (mem->data[(address * 8)/32].valeur & 0x00);
         }
     }
     else
@@ -264,13 +266,13 @@ int memory_write_half(memory mem, uint32_t address, uint16_t value) {
         if ((address*8) % 32 == 0)
         {
            
-            mem->data[address/32].valeur = value | (mem->data[address/32].valeur & 0x00);
+            mem->data[(address * 8)/32].valeur = value | (mem->data[(address * 8)/32].valeur & 0x00);
         }
         else if ((address*8) % 16 == 0)
         {
             buff = value;
             buff = buff << 16;
-            mem->data[address/32].valeur = buff | (mem->data[address/32].valeur & ~(1 << 16));
+            mem->data[(address * 8)/32].valeur = buff | (mem->data[(address * 8)/32].valeur & ~(1 << 16));
         }
     }
     printf("\n valeur ajouter : %08x  \n",value);
@@ -280,7 +282,7 @@ int memory_write_half(memory mem, uint32_t address, uint16_t value) {
 
 int memory_write_word(memory mem, uint32_t address, uint32_t value) {
     int retour = 0;
-    mem->data[address/32].valeur = value;
+    mem->data[(address * 8)/32].valeur = value;
     return retour;
 }
 
