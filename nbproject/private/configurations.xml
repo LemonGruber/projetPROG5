@@ -49,6 +49,7 @@
       <in>registers.h</in>
       <in>scanner.c</in>
       <in>scanner.h</in>
+      <in>scanner.l</in>
       <in>send_irq.c</in>
       <in>trace.c</in>
       <in>trace.h</in>
@@ -61,7 +62,7 @@
   <confs>
     <conf name="Default" type="0">
       <toolsSet>
-        <developmentServer>local@192.168.153.141:22</developmentServer>
+        <developmentServer>localhost</developmentServer>
         <platform>3</platform>
       </toolsSet>
       <compile>
