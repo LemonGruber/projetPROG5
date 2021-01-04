@@ -42,8 +42,10 @@ int arm_load_store(arm_core p, uint32_t ins) {
     int valeur;
     int address;
     
-    uint16_t value;
-    
+    uint32_t value_word;
+    uint16_t value_half;
+    uint8_t value_byte;
+   
    
     action = ins >> 24 & 0b111;
     if (action == 0)
@@ -111,18 +113,18 @@ int arm_load_store(arm_core p, uint32_t ins) {
         else if (L == 1 && S == 0 && H == 1)
         {
             //load halfword unsigned
-            arm_read_half(p,address,*value);
+            arm_read_half(p,address,&value_half);
             
         }
         else if (L == 1 && S == 1 && H == 0)
         {
             //load byte signed
-            arm_read_byte(p,address,*value);
+            arm_read_byte(p,address,&value_byte);
         }
         else if (L == 1 && S == 1 && H == 1)
         {
             //load halfword signed
-            arm_read_half(p,address,*value);
+            arm_read_half(p,address,&value_half);
         }
         else
         {
@@ -133,15 +135,62 @@ int arm_load_store(arm_core p, uint32_t ins) {
     }
     else
     {
+        L = (ins >> 20) & 1;
+        
+        I = (ins >> 25) & 1;
+        rm = ins & 0b1111;
+        address = (ins >> 16) & 0b1111;
+        
+        
+        shift_imm = (ins >> 7 ) &0b11111;
+        shift = (ins >> 5) & 0b11;
+        
+        
+        if (I == 1)
+        {
+            //Alors:
+            //On recupere la valeur
+            valeur = (ins >> 12) & 0b1111;
+        }
+        else
+        {
+            //Si non :
+            //On recupere la valeur dans le registre
+            valeur = arm_read_register(p,(ins >> 12) & 0b1111);
+        }
+        
         //Traitement pour un mot
+        if (shift == 0b00)
+        {
+            //LSL (declage a gauche)
+            rm = rm << shift_imm;
+        }
+        else if (shift == 0b01)
+        {
+            //LSR (decalage a droite)
+            rm = rm >> shift_imm;
+        }
+        else if (shift == 0b10)
+        {
+            //ASR (decalage arithmetique a droite)
+        }
+        else if (shift == 0b11)
+        {
+            //ROR ou RRX
+        }
+        
+        address = address + rm;
+        
         if (L == 1)
         {
-
+            
             //Load word
+            arm_write_word(p,address,valeur);
         }
         else
         {
             //store word
+            arm_read_word(p,address,&value_word);
         }
     }
     
