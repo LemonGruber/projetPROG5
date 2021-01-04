@@ -1,70 +1,61 @@
-insertion_sort.o: insertion_sort.c /usr/include/newlib/stdio.h \
- /usr/include/newlib/_ansi.h /usr/include/newlib/newlib.h \
- /usr/include/newlib/_newlib_version.h /usr/include/newlib/sys/config.h \
- /usr/include/newlib/machine/ieeefp.h /usr/include/newlib/sys/features.h \
- /usr/include/newlib/sys/cdefs.h \
- /usr/include/newlib/machine/_default_types.h \
- /usr/lib/gcc/arm-none-eabi/6.3.1/include/stddef.h \
- /usr/lib/gcc/arm-none-eabi/6.3.1/include/stdarg.h \
- /usr/include/newlib/sys/reent.h /usr/include/newlib/_ansi.h \
- /usr/include/newlib/sys/_types.h /usr/include/newlib/machine/_types.h \
- /usr/include/newlib/sys/lock.h /usr/include/newlib/sys/types.h \
- /usr/include/newlib/sys/_stdint.h /usr/include/newlib/machine/endian.h \
- /usr/include/newlib/machine/_endian.h /usr/include/newlib/sys/select.h \
- /usr/include/newlib/sys/_sigset.h /usr/include/newlib/sys/_timeval.h \
- /usr/include/newlib/sys/timespec.h /usr/include/newlib/sys/_timespec.h \
- /usr/include/newlib/machine/types.h /usr/include/newlib/sys/stdio.h
+insertion_sort.o: insertion_sort.c \
+ /usr/arm-linux-gnueabi/include/stdc-predef.h \
+ /usr/arm-linux-gnueabi/include/stdio.h \
+ /usr/arm-linux-gnueabi/include/bits/libc-header-start.h \
+ /usr/arm-linux-gnueabi/include/features.h \
+ /usr/arm-linux-gnueabi/include/sys/cdefs.h \
+ /usr/arm-linux-gnueabi/include/bits/wordsize.h \
+ /usr/arm-linux-gnueabi/include/bits/long-double.h \
+ /usr/arm-linux-gnueabi/include/gnu/stubs.h \
+ /usr/arm-linux-gnueabi/include/gnu/stubs-soft.h \
+ /usr/lib/gcc-cross/arm-linux-gnueabi/7/include/stddef.h \
+ /usr/arm-linux-gnueabi/include/bits/types.h \
+ /usr/arm-linux-gnueabi/include/bits/typesizes.h \
+ /usr/arm-linux-gnueabi/include/bits/types/__FILE.h \
+ /usr/arm-linux-gnueabi/include/bits/types/FILE.h \
+ /usr/arm-linux-gnueabi/include/bits/libio.h \
+ /usr/arm-linux-gnueabi/include/bits/_G_config.h \
+ /usr/arm-linux-gnueabi/include/bits/types/__mbstate_t.h \
+ /usr/lib/gcc-cross/arm-linux-gnueabi/7/include/stdarg.h \
+ /usr/arm-linux-gnueabi/include/bits/stdio_lim.h \
+ /usr/arm-linux-gnueabi/include/bits/sys_errlist.h
 
-/usr/include/newlib/stdio.h:
+/usr/arm-linux-gnueabi/include/stdc-predef.h:
 
-/usr/include/newlib/_ansi.h:
+/usr/arm-linux-gnueabi/include/stdio.h:
 
-/usr/include/newlib/newlib.h:
+/usr/arm-linux-gnueabi/include/bits/libc-header-start.h:
 
-/usr/include/newlib/_newlib_version.h:
+/usr/arm-linux-gnueabi/include/features.h:
 
-/usr/include/newlib/sys/config.h:
+/usr/arm-linux-gnueabi/include/sys/cdefs.h:
 
-/usr/include/newlib/machine/ieeefp.h:
+/usr/arm-linux-gnueabi/include/bits/wordsize.h:
 
-/usr/include/newlib/sys/features.h:
+/usr/arm-linux-gnueabi/include/bits/long-double.h:
 
-/usr/include/newlib/sys/cdefs.h:
+/usr/arm-linux-gnueabi/include/gnu/stubs.h:
 
-/usr/include/newlib/machine/_default_types.h:
+/usr/arm-linux-gnueabi/include/gnu/stubs-soft.h:
 
-/usr/lib/gcc/arm-none-eabi/6.3.1/include/stddef.h:
+/usr/lib/gcc-cross/arm-linux-gnueabi/7/include/stddef.h:
 
-/usr/lib/gcc/arm-none-eabi/6.3.1/include/stdarg.h:
+/usr/arm-linux-gnueabi/include/bits/types.h:
 
-/usr/include/newlib/sys/reent.h:
+/usr/arm-linux-gnueabi/include/bits/typesizes.h:
 
-/usr/include/newlib/_ansi.h:
+/usr/arm-linux-gnueabi/include/bits/types/__FILE.h:
 
-/usr/include/newlib/sys/_types.h:
+/usr/arm-linux-gnueabi/include/bits/types/FILE.h:
 
-/usr/include/newlib/machine/_types.h:
+/usr/arm-linux-gnueabi/include/bits/libio.h:
 
-/usr/include/newlib/sys/lock.h:
+/usr/arm-linux-gnueabi/include/bits/_G_config.h:
 
-/usr/include/newlib/sys/types.h:
+/usr/arm-linux-gnueabi/include/bits/types/__mbstate_t.h:
 
-/usr/include/newlib/sys/_stdint.h:
+/usr/lib/gcc-cross/arm-linux-gnueabi/7/include/stdarg.h:
 
-/usr/include/newlib/machine/endian.h:
+/usr/arm-linux-gnueabi/include/bits/stdio_lim.h:
 
-/usr/include/newlib/machine/_endian.h:
-
-/usr/include/newlib/sys/select.h:
-
-/usr/include/newlib/sys/_sigset.h:
-
-/usr/include/newlib/sys/_timeval.h:
-
-/usr/include/newlib/sys/timespec.h:
-
-/usr/include/newlib/sys/_timespec.h:
-
-/usr/include/newlib/machine/types.h:
-
-/usr/include/newlib/sys/stdio.h:
+/usr/arm-linux-gnueabi/include/bits/sys_errlist.h:
