@@ -1,0 +1,8 @@
+*.o
+Examples/
+.deps/
+build-aux/
+autom4te.cache/
+nbproject/
+Makefile
+config.log
