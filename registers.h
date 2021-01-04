@@ -1,130 +1,45 @@
 /*
-Armator - simulateur de jeu d'instruction ARMv5T ï¿½ but pï¿½dagogique
+Armator - simulateur de jeu d'instruction ARMv5T à but pédagogique
 Copyright (C) 2011 Guillaume Huard
 Ce programme est libre, vous pouvez le redistribuer et/ou le modifier selon les
-termes de la Licence Publique Gï¿½nï¿½rale GNU publiï¿½e par la Free Software
-Foundation (version 2 ou bien toute autre version ultï¿½rieure choisie par vous).
+termes de la Licence Publique Générale GNU publiée par la Free Software
+Foundation (version 2 ou bien toute autre version ultérieure choisie par vous).
 
-Ce programme est distribuï¿½ car potentiellement utile, mais SANS AUCUNE
+Ce programme est distribué car potentiellement utile, mais SANS AUCUNE
 GARANTIE, ni explicite ni implicite, y compris les garanties de
-commercialisation ou d'adaptation dans un but spï¿½cifique. Reportez-vous ï¿½ la
-Licence Publique Gï¿½nï¿½rale GNU pour plus de dï¿½tails.
+commercialisation ou d'adaptation dans un but spécifique. Reportez-vous à la
+Licence Publique Générale GNU pour plus de détails.
 
-Vous devez avoir reï¿½u une copie de la Licence Publique Gï¿½nï¿½rale GNU en mï¿½me
-temps que ce programme ; si ce n'est pas le cas, ï¿½crivez ï¿½ la Free Software
+Vous devez avoir reçu une copie de la Licence Publique Générale GNU en même
+temps que ce programme ; si ce n'est pas le cas, écrivez à la Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307,
-ï¿½tats-Unis.
+États-Unis.
 
 Contact: Guillaume.Huard@imag.fr
-	 Bï¿½timent IMAG
+	 Bâtiment IMAG
 	 700 avenue centrale, domaine universitaire
-	 38401 Saint Martin d'Hï¿½res
+	 38401 Saint Martin d'Hères
 */
 #ifndef __REGISTERS_H__
 #define __REGISTERS_H__
-
-/**
- * @file registers.h
- * @author Guillaume, Vincent
- * @date 18/12/2020
- * @brief gere les registres
- */
-
 #include <stdint.h>
 
 typedef struct registers_data *registers;
 
-/**
- * @return un registre vide
- * @brief alloue la memoire pour les registre 
- */
 registers registers_create();
-
-/**
- * @param r un registre de la forme de structure registers
- * @brief libere la memoire prise par les registres
- */
 void registers_destroy(registers r);
 
-/**
- * @param r un registre de la forme de structure registers
- * @return le mode du regsitre
- * @brief renvoie le mode actuel du registre
- */
 uint8_t get_mode(registers r);
-
-/**
- * @param r un registre de la forme de structure registers
- * @return 1 si le mode peut lire le registre spsr 0 sinon
- * @brief permet de savoir si on peut lire le registre spsr 
- */
 int current_mode_has_spsr(registers r);
-
-/**
- * @param r un registre de la forme de structure registers
- * @return 1 si le mode est un mode privilegier 0 sinon
- * @brief permet de savoir si on est en mode privilegier
- */
 int in_a_privileged_mode(registers r);
 
-/**
- * @param r un registre de la forme de structure registers
- * @param reg l'indice d'un registre
- * @return la valeur du registre reg
- * @brief permet de lire la valeur d'un registre donner 
- */
 uint32_t read_register(registers r, uint8_t reg);
-
-/**
- * @param r un registre de la forme registers
- * @param reg un numero de registre
- * @return la valeur d'un registre reg dans r
- * @brief lis la valeur d'un registre donner utilisable par user
- */
 uint32_t read_usr_register(registers r, uint8_t reg);
-
-/**
- * @param r un registre de la forme registers
- * @return la valeur du registre cpsr
- * @brief lis dans les registre le registe CPSR et renvoie sa valeur
- */
 uint32_t read_cpsr(registers r);
-
-/**
- * @param r un registre de la forme registers
- * @return la valeur du registre spsr
- * @brief lis dans les registre le registe SPSR et renvoie sa valeur
- */
 uint32_t read_spsr(registers r);
-
-/**
- * @param r un registre de la forme registers
- * @param reg
- * @param value la valeur a mettre dans le registe
- * @brief met la valeur donner dans le registre voulu
- */
 void write_register(registers r, uint8_t reg, uint32_t value);
-
-/**
- * @param r un registre de la forme registers
- * @param reg un numero de registre
- * @param value la valeur a mettre dans le registe
- * @brief met la valeur donner dans le registre user voulu 
- */
 void write_usr_register(registers r, uint8_t reg, uint32_t value);
-
-/**
- * @param r un registre de la forme registers
- * @param value la valeur a mettre dans le registe
- * @brief modifie la valeur de cpsr
- */
 void write_cpsr(registers r, uint32_t value);
-
-/**
- * @param r un registre de la forme registers
- * @param value la valeur a mettre dans le registe
- * @brief modifie la valeur de spsr
- */
 void write_spsr(registers r, uint32_t value);
 
 #endif
