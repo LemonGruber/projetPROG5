@@ -140,8 +140,6 @@ int memory_read_word(memory mem, uint32_t address, uint32_t *value) {
 
 
 int memory_write_byte(memory mem, uint32_t address, uint8_t value) {
-    int i = 0;
-    int retour = 0;
     uint32_t buff;
     if (!mem->is_big_endian)
     {
@@ -209,6 +207,8 @@ int memory_write_byte(memory mem, uint32_t address, uint8_t value) {
             mem->data[(address*8)/32] = mem->data[(address*8)/32] | (buff << 8);
         }
     }
+    
+    return 0;
 }
 
 int memory_write_half(memory mem, uint32_t address, uint16_t value) {
