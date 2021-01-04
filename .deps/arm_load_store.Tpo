@@ -49,7 +49,7 @@ arm_load_store.o: arm_load_store.c /usr/include/stdc-predef.h \
  /usr/include/x86_64-linux-gnu/bits/floatn.h \
  /usr/include/x86_64-linux-gnu/bits/floatn-common.h /usr/include/alloca.h \
  /usr/include/x86_64-linux-gnu/bits/stdlib-float.h trace_location.h \
- trace.h arm_exception.h arm_constants.h util.h debug.h
+ trace.h arm_exception.h arm_constants.h util.h debug.h registers.h
 
 /usr/include/stdc-predef.h:
 
@@ -180,3 +180,5 @@ arm_constants.h:
 util.h:
 
 debug.h:
+
+registers.h:

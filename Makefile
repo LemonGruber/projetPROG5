@@ -265,34 +265,19 @@ distuninstallcheck_listfiles = find . -type f -print
 am__distuninstallcheck_listfiles = $(distuninstallcheck_listfiles) \
   | sed 's|^\./|$(prefix)/|' | grep -v '$(infodir)/dir$$'
 distcleancheck_listfiles = find . -type f -print
-<<<<<<< HEAD
-ACLOCAL = ${SHELL} /mnt/d/Users/vince/Documents/fac/S5/Prog/projetPROG5/build-aux/missing aclocal-1.16
+ACLOCAL = ${SHELL} /home/vince/prog/build-aux/missing aclocal-1.16
 AMTAR = $${TAR-tar}
 AM_DEFAULT_VERBOSITY = 1
-AUTOCONF = ${SHELL} /mnt/d/Users/vince/Documents/fac/S5/Prog/projetPROG5/build-aux/missing autoconf
-AUTOHEADER = ${SHELL} /mnt/d/Users/vince/Documents/fac/S5/Prog/projetPROG5/build-aux/missing autoheader
-AUTOMAKE = ${SHELL} /mnt/d/Users/vince/Documents/fac/S5/Prog/projetPROG5/build-aux/missing automake-1.16
+AUTOCONF = ${SHELL} /home/vince/prog/build-aux/missing autoconf
+AUTOHEADER = ${SHELL} /home/vince/prog/build-aux/missing autoheader
+AUTOMAKE = ${SHELL} /home/vince/prog/build-aux/missing automake-1.16
 AWK = gawk
 CC = gcc
 CCAS = gcc
 CCASDEPMODE = depmode=gcc3
-CCASFLAGS = -g -O2
+CCASFLAGS = -Wall -Werror -g
 CCDEPMODE = depmode=gcc3
-=======
-ACLOCAL = aclocal-1.16
-AMTAR = $${TAR-tar}
-AM_DEFAULT_VERBOSITY = 1
-AUTOCONF = autoconf
-AUTOHEADER = autoheader
-AUTOMAKE = automake-1.16
-AWK = gawk
-CC = gcc
-CCAS = gcc
-CCASDEPMODE = depmode=none
-CCASFLAGS = -g -O2
-CCDEPMODE = depmode=none
->>>>>>> f0ebe22d920598273a6f2a95308035d00dbcb4e9
-CFLAGS = -g -O2
+CFLAGS = -Wall -Werror -g
 CPP = gcc -E
 CPPFLAGS = 
 CYGPATH_W = echo
@@ -301,40 +286,24 @@ DEPDIR = .deps
 ECHO_C = 
 ECHO_N = -n
 ECHO_T = 
-<<<<<<< HEAD
 EGREP = /usr/bin/grep -E
 EXEEXT = 
 GCC_CROSS = arm-none-eabi-gcc
 GREP = /usr/bin/grep
-=======
-EGREP = /bin/grep -E
-EXEEXT = 
-GCC_CROSS = arm-none-eabi-gcc
-GREP = /bin/grep
->>>>>>> f0ebe22d920598273a6f2a95308035d00dbcb4e9
 INSTALL = /usr/bin/install -c
 INSTALL_DATA = ${INSTALL} -m 644
 INSTALL_PROGRAM = ${INSTALL}
 INSTALL_SCRIPT = ${INSTALL}
 INSTALL_STRIP_PROGRAM = $(install_sh) -c -s
 LDFLAGS = 
-<<<<<<< HEAD
-LEX = ${SHELL} /mnt/d/Users/vince/Documents/fac/S5/Prog/projetPROG5/build-aux/missing flex
-=======
-LEX = flex
->>>>>>> f0ebe22d920598273a6f2a95308035d00dbcb4e9
+LEX = ${SHELL} /home/vince/prog/build-aux/missing flex
 LEXLIB = 
 LEX_OUTPUT_ROOT = 
 LIBOBJS = 
 LIBS = 
 LTLIBOBJS = 
-<<<<<<< HEAD
-MAKEINFO = ${SHELL} /mnt/d/Users/vince/Documents/fac/S5/Prog/projetPROG5/build-aux/missing makeinfo
+MAKEINFO = ${SHELL} /home/vince/prog/build-aux/missing makeinfo
 MKDIR_P = /usr/bin/mkdir -p
-=======
-MAKEINFO = makeinfo
-MKDIR_P = /bin/mkdir -p
->>>>>>> f0ebe22d920598273a6f2a95308035d00dbcb4e9
 OBJEXT = o
 PACKAGE = arm_simulator
 PACKAGE_BUGREPORT = Guillaume.Huard@imag.fr
@@ -348,17 +317,10 @@ SET_MAKE =
 SHELL = /bin/bash
 STRIP = 
 VERSION = 1.4
-<<<<<<< HEAD
-abs_builddir = /mnt/d/Users/vince/Documents/fac/S5/Prog/projetPROG5
-abs_srcdir = /mnt/d/Users/vince/Documents/fac/S5/Prog/projetPROG5
-abs_top_builddir = /mnt/d/Users/vince/Documents/fac/S5/Prog/projetPROG5
-abs_top_srcdir = /mnt/d/Users/vince/Documents/fac/S5/Prog/projetPROG5
-=======
-abs_builddir = /root/Projet_S5/projetPROG5
-abs_srcdir = /root/Projet_S5/projetPROG5
-abs_top_builddir = /root/Projet_S5/projetPROG5
-abs_top_srcdir = /root/Projet_S5/projetPROG5
->>>>>>> f0ebe22d920598273a6f2a95308035d00dbcb4e9
+abs_builddir = /home/vince/prog
+abs_srcdir = /home/vince/prog
+abs_top_builddir = /home/vince/prog
+abs_top_srcdir = /home/vince/prog
 ac_ct_CC = gcc
 am__include = include
 am__leading_dot = .
@@ -377,11 +339,7 @@ host_alias =
 htmldir = ${docdir}
 includedir = ${prefix}/include
 infodir = ${datarootdir}/info
-<<<<<<< HEAD
-install_sh = ${SHELL} /mnt/d/Users/vince/Documents/fac/S5/Prog/projetPROG5/build-aux/install-sh
-=======
-install_sh = ${SHELL} /root/Projet_S5/projetPROG5/build-aux/install-sh
->>>>>>> f0ebe22d920598273a6f2a95308035d00dbcb4e9
+install_sh = ${SHELL} /home/vince/prog/build-aux/install-sh
 libdir = ${exec_prefix}/lib
 libexecdir = ${exec_prefix}/libexec
 localedir = ${datarootdir}/locale
@@ -568,7 +526,6 @@ $(am__depfiles_remade):
 am--depfiles: $(am__depfiles_remade)
 
 .c.o:
-<<<<<<< HEAD
 	$(AM_V_CC)$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
 	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
 #	$(AM_V_CC)source='$<' object='$@' libtool=no \
@@ -581,20 +538,6 @@ am--depfiles: $(am__depfiles_remade)
 #	$(AM_V_CC)source='$<' object='$@' libtool=no \
 #	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
 #	$(AM_V_CC_no)$(COMPILE) -c -o $@ `$(CYGPATH_W) '$<'`
-=======
-#	$(AM_V_CC)$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
-#	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
-	$(AM_V_CC)source='$<' object='$@' libtool=no \
-	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-	$(AM_V_CC_no)$(COMPILE) -c -o $@ $<
-
-.c.obj:
-#	$(AM_V_CC)$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ `$(CYGPATH_W) '$<'`
-#	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
-	$(AM_V_CC)source='$<' object='$@' libtool=no \
-	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-	$(AM_V_CC_no)$(COMPILE) -c -o $@ `$(CYGPATH_W) '$<'`
->>>>>>> f0ebe22d920598273a6f2a95308035d00dbcb4e9
 
 .l.c:
 	$(AM_V_LEX)$(am__skiplex) $(SHELL) $(YLWRAP) $< $(LEX_OUTPUT_ROOT).c $@ -- $(LEXCOMPILE)
