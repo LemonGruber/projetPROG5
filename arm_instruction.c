@@ -29,7 +29,30 @@ Contact: Guillaume.Huard@imag.fr
 #include "util.h"
 
 static int arm_execute_instruction(arm_core p) {
-    return 0;
+    uint32_t ins;
+    int result;
+    
+    result = arm_fetch( p, &ins);
+    
+    int bit_27 = (ins >> 27) & 1;
+    int bit_26 = (ins >> 26) & 1;
+    
+    if (bit_27 == 0 && bit_26 == 1){
+      result = arm_load_store(p, ins);
+    }
+    else if (bit_27 == 0 && bit_26 == 0){
+      int bit_25 = (ins >> 25) & 1;
+      if (!bit_25){
+        result = arm_load_store(p, ins);
+      }
+      else {
+        result = 1;
+      }
+    }
+    else {
+      result = 1;
+    }
+    return result;
 }
 
 int arm_step(arm_core p) {
