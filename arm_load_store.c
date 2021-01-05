@@ -30,7 +30,7 @@ Contact: Guillaume.Huard@imag.fr
 int arm_load_store(arm_core p, uint32_t ins) {
     int L;
     int action;
-    int rm;
+    int Rm;
     int S;
     int H;
     int I;
@@ -40,8 +40,6 @@ int arm_load_store(arm_core p, uint32_t ins) {
     int shift_imm;
     int shift;
     
-    int adresse;
-    
     int valeur;
     int Rn;
     
@@ -50,7 +48,7 @@ int arm_load_store(arm_core p, uint32_t ins) {
     uint8_t value_byte;
    
    
-    action = ins >> 24 & 0b111;
+    action = ins >> 25 & 0b111;
     if (action == 0)
     {
         S = (ins >> 6) & 1;
@@ -58,7 +56,7 @@ int arm_load_store(arm_core p, uint32_t ins) {
         L = (ins >> 20) & 1;
         I = (ins >> 22) & 1;
         
-        rm = ins & 0b1111;
+        Rm = ins & 0b1111;
         Rn = (ins >> 16) & 0b1111;
         
         
@@ -68,12 +66,12 @@ int arm_load_store(arm_core p, uint32_t ins) {
         if (shift == 0b00)
         {
             //LSL (declage a gauche)
-            rm = rm << shift_imm;
+            Rm = Rm << shift_imm;
         }
         else if (shift == 0b01)
         {
             //LSR (decalage a droite)
-            rm = rm >> shift_imm;
+            Rm = Rm >> shift_imm;
         }
         else if (shift == 0b10)
         {
@@ -84,7 +82,7 @@ int arm_load_store(arm_core p, uint32_t ins) {
             //ROR ou RRX
         }
         
-        Rn = Rn + rm;
+        Rn = Rn + Rm;
         //Si valeur brut
         if (I == 1)
         {
@@ -139,77 +137,101 @@ int arm_load_store(arm_core p, uint32_t ins) {
     else
     {
         L = (ins >> 20) & 1;
-        
+        U = (ins >> 23) & 1;
         I = (ins >> 25) & 1;
-        rm = ins & 0b1111;
-        Rn = (ins >> 16) & 0b1111;
-        
-        
-        shift_imm = (ins >> 7 ) &0b11111;
-        shift = (ins >> 5) & 0b11;
-        
-        
+        Rd = (ins >> 12) & 0b1111;
+        Rn = arm_read_register(p ,(ins >> 16) & 0b1111);
+
+
         if (I == 1)
         {
+            Rm = arm_read_register(p, ins & 0b1111);
+            shift_imm = (ins >> 7 ) &0b11111;
+            shift = (ins >> 5) & 0b11;
             //Alors:
-            //On recupere la valeur
-            valeur = (ins >> 12) & 0b1111;
+            //Traitement pour un mot
+            if (shift == 0b00)
+            {
+                //LSL (declage a gauche)
+                Rm = Rm << shift_imm;
+            }
+            else if (shift == 0b01)
+            {
+                //LSR (decalage a droite)
+                if (shift_imm == 0)
+                {
+                    Rm = 0;
+                }
+                else
+                {
+                    Rm = Rm >> shift_imm;
+                }
+            }
+            else if (shift == 0b10)
+            {
+                //ASR (decalage arithmetique a droite)
+                if (shift_imm == 0)
+                {
+                    if (((Rm >> 31) & 0b1) == 1)
+                    {
+                        Rm = 0xFFFFFFFF;
+                    }
+                    else
+                    {
+                        Rm = 0;
+                    }
+                }
+                else
+                {
+                    Rm = Rm >> shift_imm;
+                }
+                
+            }
+            else if (shift == 0b11)
+            {
+                //ROR ou RRX
+                if (shift_imm == 0)
+                {
+                    Rm = ((arm_read_register(p, CPSR) >> 29) &0b1) || Rm >> 1;
+                }
+                else
+                {
+                    Rm = (Rm >> shift_imm) & (Rm << (32-shift_imm));
+                }
+                
+            }
         }
         else
         {
             //Si non :
-            //On recupere la valeur dans le registre
-            U = (ins >> 23) & 1;
-            
-            Rd = (ins >> 12) & 0b1111;
-            arm_read_register(p,Rd,&adresse);
-            if (U == 1)
-            {
-              adresse = adresse + (ins & 0xFFF);
-            }
-            else //U == 0
-            {
-              adresse = adresse - (ins & 0xFFF);
-            }
-            valeur = arm_read_word(p,(ins >> 12) & 0b1111);
+            //On recupere le offset dans Rm pour factoriser le code
+            Rm = ins & 0xFFF;
         }
-        
-        //Traitement pour un mot
-        if (shift == 0b00)
+
+        if (U == 1)
         {
-            //LSL (declage a gauche)
-            rm = rm << shift_imm;
-        }
-        else if (shift == 0b01)
-        {
-            //LSR (decalage a droite)
-            rm = rm >> shift_imm;
-        }
-        else if (shift == 0b10)
-        {
-            //ASR (decalage arithmetique a droite)
-        }
-        else if (shift == 0b11)
-        {
-            //ROR ou RRX
-        }
-        
-        Rn = Rn + rm;
-        
-        if (L == 1)
-        {
-            
-            //Load word
-            arm_write_word(p,Rn,valeur);
+            Rn = Rn + Rm;
         }
         else
         {
-            //store word
-            arm_read_word(p,Rn,&value_word);
+            Rn = Rn - Rm;
+        }
+        
+        if (L == 1)
+        {
+            //Load word
+            arm_read_word(p, Rn, &value_word);
+            arm_write_register(p, Rd, value_word);
+        }
+        else
+        {
+            //Store word
+            value_word = arm_read_register(p, Rd);
+            arm_write_word(p, Rn, value_word);
         }
     }
     
-    return 0_;
+    return 0;
 }
 
 int arm_load_store_multiple(arm_core p, uint32_t ins) {
