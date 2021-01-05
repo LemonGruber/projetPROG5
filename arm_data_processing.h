@@ -1,31 +1,65 @@
 /*
-Armator - simulateur de jeu d'instruction ARMv5T à but pédagogique
+Armator - simulateur de jeu d'instruction ARMv5T ï¿½ but pï¿½dagogique
 Copyright (C) 2011 Guillaume Huard
 Ce programme est libre, vous pouvez le redistribuer et/ou le modifier selon les
-termes de la Licence Publique Générale GNU publiée par la Free Software
-Foundation (version 2 ou bien toute autre version ultérieure choisie par vous).
+termes de la Licence Publique Gï¿½nï¿½rale GNU publiï¿½e par la Free Software
+Foundation (version 2 ou bien toute autre version ultï¿½rieure choisie par vous).
 
-Ce programme est distribué car potentiellement utile, mais SANS AUCUNE
+Ce programme est distribuï¿½ car potentiellement utile, mais SANS AUCUNE
 GARANTIE, ni explicite ni implicite, y compris les garanties de
-commercialisation ou d'adaptation dans un but spécifique. Reportez-vous à la
-Licence Publique Générale GNU pour plus de détails.
+commercialisation ou d'adaptation dans un but spï¿½cifique. Reportez-vous ï¿½ la
+Licence Publique Gï¿½nï¿½rale GNU pour plus de dï¿½tails.
 
-Vous devez avoir reçu une copie de la Licence Publique Générale GNU en même
-temps que ce programme ; si ce n'est pas le cas, écrivez à la Free Software
+Vous devez avoir reï¿½u une copie de la Licence Publique Gï¿½nï¿½rale GNU en mï¿½me
+temps que ce programme ; si ce n'est pas le cas, ï¿½crivez ï¿½ la Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307,
-États-Unis.
+ï¿½tats-Unis.
 
 Contact: Guillaume.Huard@imag.fr
-	 Bâtiment IMAG
+	 Bï¿½timent IMAG
 	 700 avenue centrale, domaine universitaire
-	 38401 Saint Martin d'Hères
+	 38401 Saint Martin d'Hï¿½res
 */
+
 #ifndef __ARM_DATA_PROCESSING_H__
 #define __ARM_DATA_PROCESSING_H__
+
+/**
+ * @file arm_data_processing.h
+ * @author G.Huard, Vincent, Leandre, Yann
+ * @date 05/01/2020
+ * @brief gere les cacules sur les donnees
+ */
 #include <stdint.h>
 #include "arm_core.h"
 
+/**
+ * @param p le systeme en structure arm_core
+ * @param ins l'instruction en uint32_t
+ * @return retourne 0 si tout va bien 1 si non
+ * @brief effectue tout les shifts "compliquer" avec 2 opertion (shift et une operation)
+ */
 int arm_data_processing_shift(arm_core p, uint32_t ins);
+
+/**
+ * @param p le systeme en structure arm_core
+ * @param ins l'instruction en uint32_t
+ * @return retourne 0 si tout va bien 1 si non
+ * @brief effectue les calculs lorsque les data sont en valeur imediate
+ * @todo a faire 
+ */
 int arm_data_processing_immediate_msr(arm_core p, uint32_t ins);
+
+/**
+ * @param val_1 la premier valeur (a utiliser par defaut si il y a pas de 2nd valeur)
+ * @param val_2 la deuxieme valeur (0 si il n'y a pas d'autre valeurs)
+ * @param op le code de l'operation a evvectuer de type uint8_t
+ * @param val la valeur de sortie (reste par defaut si on veux que les flags)
+ * @param flag les flags des sortie d'opreration si desirer (0 si non)
+ * @return retourne 0 si tout vas bien 1 si non
+ * @bug faire les valeurs de V
+ * @brief calcul entre 2 valeurs la valeur de sortie et/ou les flags
+ */
+int opcode (uint32_t val_1, uint32_t val_2, uint8_t op,uint32_t *val, uint8_t *flag);
 
 #endif

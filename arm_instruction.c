@@ -142,6 +142,7 @@ static int arm_execute_instruction(arm_core p) {
         //data processing immediate shift
         result = arm_data_processing_shift(p,ins);
     }
+    return result;
     
     /*if (bit_27 == 0 && bit_26 == 1){
       result = arm_load_store(p, ins);

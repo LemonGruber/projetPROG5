@@ -1,24 +1,24 @@
 /*
-Armator - simulateur de jeu d'instruction ARMv5T à but pédagogique
+Armator - simulateur de jeu d'instruction ARMv5T ï¿½ but pï¿½dagogique
 Copyright (C) 2011 Guillaume Huard
 Ce programme est libre, vous pouvez le redistribuer et/ou le modifier selon les
-termes de la Licence Publique Générale GNU publiée par la Free Software
-Foundation (version 2 ou bien toute autre version ultérieure choisie par vous).
+termes de la Licence Publique Gï¿½nï¿½rale GNU publiï¿½e par la Free Software
+Foundation (version 2 ou bien toute autre version ultï¿½rieure choisie par vous).
 
-Ce programme est distribué car potentiellement utile, mais SANS AUCUNE
+Ce programme est distribuï¿½ car potentiellement utile, mais SANS AUCUNE
 GARANTIE, ni explicite ni implicite, y compris les garanties de
-commercialisation ou d'adaptation dans un but spécifique. Reportez-vous à la
-Licence Publique Générale GNU pour plus de détails.
+commercialisation ou d'adaptation dans un but spï¿½cifique. Reportez-vous ï¿½ la
+Licence Publique Gï¿½nï¿½rale GNU pour plus de dï¿½tails.
 
-Vous devez avoir reçu une copie de la Licence Publique Générale GNU en même
-temps que ce programme ; si ce n'est pas le cas, écrivez à la Free Software
+Vous devez avoir reï¿½u une copie de la Licence Publique Gï¿½nï¿½rale GNU en mï¿½me
+temps que ce programme ; si ce n'est pas le cas, ï¿½crivez ï¿½ la Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307,
-États-Unis.
+ï¿½tats-Unis.
 
 Contact: Guillaume.Huard@imag.fr
-	 Bâtiment IMAG
+	 Bï¿½timent IMAG
 	 700 avenue centrale, domaine universitaire
-	 38401 Saint Martin d'Hères
+	 38401 Saint Martin d'Hï¿½res
 */
 #include "arm_data_processing.h"
 #include "arm_exception.h"
@@ -29,9 +29,265 @@ Contact: Guillaume.Huard@imag.fr
 
 /* Decoding functions for different classes of instructions */
 int arm_data_processing_shift(arm_core p, uint32_t ins) {
-    return UNDEFINED_INSTRUCTION;
+    
+    int result = 0;
+    
+    uint8_t bit_4 = (ins >> 4) &1;
+    
+    uint8_t bit_5 = (ins >> 5) &1;    //* Type de shift
+    uint8_t bit_6 = (ins >> 6) &1;    //*
+    
+    uint8_t op = (ins >> 21) & 0xf;
+    
+    uint32_t val_1;
+    uint32_t val_2;
+    
+    uint32_t buff;
+    
+    int Rn = (ins >> 16) & 0xf;        //Premier operande, registre
+    int Rm = ins & 0xf;                //Deuxieme operande (celui qui est shifter), registre
+    int Rd = (ins >> 12) & 0xf;        //Registre de retour
+    int Rs = (ins >> 8) & 0xf;         //Registe du decalage (si non imediat)
+    int shift_imm = (ins >> 7) & 0x1f; //Decalage (si immediat)
+
+    int decalage;
+    uint32_t value = 0;
+    
+    uint8_t flag = 0;
+    
+    if (bit_4 == 0)
+    {
+        //immediate shift
+        decalage = shift_imm;
+        
+    }
+    else
+    {
+        //register shift
+        decalage = arm_read_register(p,Rs);
+    }
+    
+    
+    val_2 = arm_read_register(p,Rm);
+    
+    if (bit_5 == 0 && bit_6 == 0)
+    {
+        //LSL
+        val_2 = val_2 << decalage;
+    }
+    else if (bit_5 == 1 && bit_6 == 0)
+    {
+        //LSR
+        val_2 = val_2  >> decalage;
+    }
+    else if (bit_5 == 0 && bit_6 == 1)
+    {
+        //ASR
+        buff = (~(1 << decalage)) << (32-decalage);
+        val_2 = (val_2  >> decalage) | buff;
+    }
+    else if (bit_5 == 1 && bit_6 == 1 && decalage == 1)
+    {
+        //ROR (Rougeole Oreillons RubÃ©ole)
+        buff = val_2;
+        val_2 = val_2  >> decalage;
+        val_2 = val_2 | (buff << (32-decalage));
+    }
+    
+    val_1 = arm_read_register(p,Rn);
+    opcode(val_1,val_2,op,&value,&flag);
+    result = arm_write_register(p,Rd,value);      
+            
+    return result;
 }
 
 int arm_data_processing_immediate_msr(arm_core p, uint32_t ins) {
     return UNDEFINED_INSTRUCTION;
+}
+
+int opcode (uint32_t val_1, uint32_t val_2, uint8_t op,uint32_t *val, uint8_t *flags)
+{
+    uint8_t bit_0 = (op >> 0) & 1;
+    uint8_t bit_1 = (op >> 1) & 1;
+    uint8_t bit_2 = (op >> 2) & 1;
+    uint8_t bit_3 = (op >> 3) & 1;
+    
+    long int buff_1;
+    long int buff_2;
+    
+    flags = 0;
+    
+    if (bit_0 == 0 && bit_1 == 0 && bit_2 == 0 && bit_3 == 0)
+    {
+        //AND (et bit a bit)
+        *val = val_1 & val_2;
+    }
+    else if (bit_0 == 1 && bit_1 == 0 && bit_2 == 0 && bit_3 == 0)
+    {
+        //EOR (ou exclusif logique bit a bit)
+        *val = val_1 ^ val_2;
+    }
+    else if (bit_0 == 0 && bit_1 == 1 && bit_2 == 0 && bit_3 == 0)
+    {
+        //SUB (soustration)
+        *val = val_2 - val_1;
+    }
+    else if (bit_0 == 1 && bit_1 == 1 && bit_2 == 0 && bit_3 == 0)
+    {
+        //RSB (soustraction inverser)
+        *val = val_1 - val_2;
+    }
+    else if (bit_0 == 0 && bit_1 == 0 && bit_2 == 1 && bit_3 == 0)
+    {
+        //ADD (addition)
+        *val = val_1 + val_2;
+    }
+    else if (bit_0 == 1 && bit_1 == 0 && bit_2 == 1 && bit_3 == 0)
+    {
+        //ADC (addition avec le carry)
+        buff_1 = val_1;
+        buff_2 = val_2;
+        buff_1 = buff_1 + buff_2;
+        *val = val_1 + val_2;
+        
+        if (*val == buff_1)
+        {
+            *flags = *flags | (0 << 2);
+        }
+        else
+        {
+            *flags = *flags | (1 << 2);
+        }
+        
+    }
+    else if (bit_0 == 0 && bit_1 == 1 && bit_2 == 1 && bit_3 == 0)
+    {
+        //SBC (soutraction avec carry)
+        buff_1 = val_1;
+        buff_2 = val_2;
+        buff_1 = buff_2 - buff_1;
+        *val = val_2 - val_1;
+        
+        if (*val == buff_1)
+        {
+            *flags = *flags | (0 << 2);
+        }
+        else
+        {
+            *flags = *flags | (1 << 2);
+        }
+    }
+    else if (bit_0 == 1 && bit_1 == 1 && bit_2 == 1 && bit_3 == 0)
+    {
+        //RSC (soustraction inverse avec carry)
+        buff_1 = val_1;
+        buff_2 = val_2;
+        buff_1 = buff_1 - buff_2;
+        *val = val_1 - val_2;
+        
+        if (*val == buff_1)
+        {
+            *flags = *flags | (0 << 2);
+        }
+        else
+        {
+            *flags = *flags | (1 << 2);
+        }
+    }
+    else if (bit_0 == 0 && bit_1 == 0 && bit_2 == 0 && bit_3 == 1)
+    {
+        //NZCV
+        //TST (test ...
+        val_1 = val_1 & val_2;
+        if (val_1 == 0)
+        {
+            *flags = *flags | (1 << 3);
+        }
+        if ((val_1 >> 31) == 1)
+        {
+            *flags = *flags | (1 << 4);
+        }
+        
+    }
+    else if (bit_0 == 1 && bit_1 == 0 && bit_2 == 0 && bit_3 == 1)
+    {
+        //TEQ (test equivalence ...
+        val_1 = val_1 | val_2;
+        if (val_1 == 0)
+        {
+            *flags = *flags | (1 << 3);
+        }
+        if ((val_1 >> 31) == 1)
+        {
+            *flags = *flags | (1 << 4);
+        }
+        
+    }
+    else if (bit_0 == 0 && bit_1 == 1 && bit_2 == 0 && bit_3 == 1)
+    {
+        //CMP (comparer ...
+        buff_2 = val_2;
+        buff_1 = val_1;
+        
+        buff_1 = buff_2 - buff_1;
+        val_1 = val_2 - val_1;
+        if (val_1 == 0)                 //Z
+        {
+            *flags = *flags | (1 << 3);
+        }
+        if ((val_1 >> 31) == 1)         //N
+        {
+            *flags = *flags | (1 << 4);
+        }
+        if (val_1 != buff_1)            //C
+        {
+            *flags = *flags | (1 << 1);
+        }
+        *flags ((*flags >> 1) & 1) ^ ((*flags >> 4) & 1); //V
+    }
+    else if (bit_0 == 1 && bit_1 == 1 && bit_2 == 0 && bit_3 == 1)
+    {
+        //CMN (compare negative ...
+        buff_2 = val_2;
+        buff_1 = val_1;
+        
+        buff_1 = buff_2 + buff_1;
+        val_1 = val_2 + val_1;
+        if (val_1 == 0)                 //Z
+        {
+            *flags = *flags | (1 << 3);
+        }
+        if ((val_1 >> 31) == 1)         //N
+        {
+            *flags = *flags | (1 << 4);
+        }
+        if (val_1 != buff_1)            //C
+        {
+            *flags = *flags | (1 << 1);
+        }
+        *flags ((*flags >> 1) & 1) ^ ((*flags >> 4) & 1); //V
+    }
+     else if (bit_0 == 0 && bit_1 == 0 && bit_2 == 1 && bit_3 == 1)
+    {
+        //ORR (ou logique)
+         *val = val_1 | val_2;
+    }
+     else if (bit_0 == 1 && bit_1 == 0 && bit_2 == 1 && bit_3 == 1)
+    {
+        //MOV (mouve)
+        *val = val_1;
+    }
+     else if (bit_0 == 0 && bit_1 == 1 && bit_2 == 1 && bit_3 == 1)
+    {
+        //BIC (bit claire ...
+         *val = val_1 & ~(val_2);
+    }
+     else if (bit_0 == 1 && bit_1 == 1 && bit_2 == 1 && bit_3 == 1)
+    {
+        //MVN (mouve not)
+        *val = ~val_1;
+    }
+    
+    
+    return 0;
 }

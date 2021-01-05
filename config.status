@@ -719,7 +719,7 @@ S["am__quote"]=""
 _ACAWK
 cat >>"$ac_tmp/subs1.awk" <<_ACAWK &&
   for (key in S) S_is_set[key] = 1
-  FS = "\a"
+  FS = ""
 
 }
 {
@@ -816,7 +816,7 @@ D["HAVE_SELECT"]=" 1"
 D["HAVE_SOCKET"]=" 1"
 D["HAVE_STRERROR"]=" 1"
   for (key in D) D_is_set[key] = 1
-  FS = "\a"
+  FS = ""
 }
 /^[\t ]*#[\t ]*(define|undef)[\t ]+[_abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ][_abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789]*([\t (]|$)/ {
   line = $ 0
