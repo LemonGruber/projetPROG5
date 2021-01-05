@@ -44,6 +44,7 @@ int arm_data_processing_shift(arm_core p, uint32_t ins) {
     
     uint32_t buff;
     
+    
     int Rn = (ins >> 16) & 0xf;        //Premier operande, registre
     int Rm = ins & 0xf;                //Deuxieme operande (celui qui est shifter), registre
     int Rd = (ins >> 12) & 0xf;        //Registre de retour
@@ -93,7 +94,7 @@ int arm_data_processing_shift(arm_core p, uint32_t ins) {
         val_2 = val_2  >> decalage;
         val_2 = val_2 | (buff << (32-decalage));
     }
-    
+   
     val_1 = arm_read_register(p,Rn);
     opcode(val_1,val_2,op,&value,&flag);
     result = arm_write_register(p,Rd,value);      
@@ -229,7 +230,7 @@ int opcode (uint32_t val_1, uint32_t val_2, uint8_t op,uint32_t *val, uint8_t *f
         buff_2 = val_2;
         buff_1 = val_1;
         
-        buff_1 = buff_2 - buff_1;
+        buff_2 = buff_2 - buff_1;
         val_1 = val_2 - val_1;
         if (val_1 == 0)                 //Z
         {
@@ -239,11 +240,18 @@ int opcode (uint32_t val_1, uint32_t val_2, uint8_t op,uint32_t *val, uint8_t *f
         {
             *flags = *flags | (1 << 4);
         }
-        if (val_1 != buff_1)            //C
+        if (val_1 != buff_2)            //C
         {
             *flags = *flags | (1 << 1);
         }
-        *flags ((*flags >> 1) & 1) ^ ((*flags >> 4) & 1); //V
+         if ((buff_1 >> 31) & 1 != (val_2 >> 31) & 1 && (val_1 >> 31) & 1 == 0  ) //V
+        {
+            *flags = *flags | ((*flags >> 1) & 1) ^ 1; 
+        }
+        else if ((buff_1 >> 31) & 1 == (val_2 >> 31) & 1 && (val_1 >> 31) & 1 == 1  ) 
+        {
+            *flags = *flags | ((*flags >> 1) & 1) ^ 1; 
+        }
     }
     else if (bit_0 == 1 && bit_1 == 1 && bit_2 == 0 && bit_3 == 1)
     {
@@ -265,7 +273,15 @@ int opcode (uint32_t val_1, uint32_t val_2, uint8_t op,uint32_t *val, uint8_t *f
         {
             *flags = *flags | (1 << 1);
         }
-        *flags ((*flags >> 1) & 1) ^ ((*flags >> 4) & 1); //V
+        
+        if ((buff_1 >> 31) & 1 != (val_2 >> 31) & 1 && (val_1 >> 31) & 1 == 0  ) //V
+        {
+            *flags = *flags | ((*flags >> 1) & 1) ^ 1; 
+        }
+        else if ((buff_1 >> 31) & 1 == (val_2 >> 31) & 1 && (val_1 >> 31) & 1 == 1  ) 
+        {
+            *flags = *flags | ((*flags >> 1) & 1) ^ 1; 
+        }
     }
      else if (bit_0 == 0 && bit_1 == 0 && bit_2 == 1 && bit_3 == 1)
     {
