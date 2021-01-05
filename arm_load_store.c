@@ -28,25 +28,16 @@ Contact: Guillaume.Huard@imag.fr
 #include "registers.h"
 
 int arm_load_store(arm_core p, uint32_t ins) {
-    int L;
-    int action;
-    int Rm;
-    int S;
-    int H;
-    int I;
-    int Rd;
-    int U;
+    int B, H, I, L, P, S, U, W ;
+    int action, index, adresse, valeur;
+    int Rm, Rd, Rn;
     
     int shift_imm;
     int shift;
     
-    int valeur;
-    int Rn;
-    
     uint32_t value_word;
     uint16_t value_half;
     uint8_t value_byte;
-   
    
     action = ins >> 25 & 0b111;
     if (action == 0)
@@ -136,16 +127,18 @@ int arm_load_store(arm_core p, uint32_t ins) {
     }
     else
     {
-        L = (ins >> 20) & 1;
-        U = (ins >> 23) & 1;
-        I = (ins >> 25) & 1;
         Rd = (ins >> 12) & 0b1111;
-        Rn = arm_read_register(p ,(ins >> 16) & 0b1111);
-
+        Rn = (ins >> 16) & 0b1111;
+        L = (ins >> 20) & 1;
+        W = (ins >> 21) & 1;
+        B = (ins >> 22) & 1;
+        U = (ins >> 23) & 1;
+        P = (ins >> 24) & 1;
+        I = (ins >> 25) & 1;
 
         if (I == 1)
         {
-            Rm = arm_read_register(p, ins & 0b1111);
+            Rm = ins & 0b1111;
             shift_imm = (ins >> 7 ) &0b11111;
             shift = (ins >> 5) & 0b11;
             //Alors:
@@ -153,18 +146,18 @@ int arm_load_store(arm_core p, uint32_t ins) {
             if (shift == 0b00)
             {
                 //LSL (declage a gauche)
-                Rm = Rm << shift_imm;
+                index = arm_read_register(p, Rm) << shift_imm;
             }
             else if (shift == 0b01)
             {
                 //LSR (decalage a droite)
                 if (shift_imm == 0)
                 {
-                    Rm = 0;
+                    index = 0;
                 }
                 else
                 {
-                    Rm = Rm >> shift_imm;
+                    index = arm_read_register(p, Rm) >> shift_imm;
                 }
             }
             else if (shift == 0b10)
@@ -174,16 +167,16 @@ int arm_load_store(arm_core p, uint32_t ins) {
                 {
                     if (((Rm >> 31) & 0b1) == 1)
                     {
-                        Rm = 0xFFFFFFFF;
+                        index = 0xFFFFFFFF;
                     }
                     else
                     {
-                        Rm = 0;
+                        index = 0;
                     }
                 }
                 else
                 {
-                    Rm = Rm >> shift_imm;
+                    index = arm_read_register(p, Rm) >> shift_imm;
                 }
                 
             }
@@ -192,42 +185,82 @@ int arm_load_store(arm_core p, uint32_t ins) {
                 //ROR ou RRX
                 if (shift_imm == 0)
                 {
-                    Rm = ((arm_read_register(p, CPSR) >> 29) &0b1) || Rm >> 1;
+                    index = ((arm_read_register(p, CPSR) >> 29) &0b1) || Rm >> 1;
                 }
                 else
                 {
-                    Rm = (Rm >> shift_imm) & (Rm << (32-shift_imm));
-                }
-                
+                    index = (arm_read_register(p, Rm) >> shift_imm) & (arm_read_register(p, Rm) << (32-shift_imm));
+                }                
             }
         }
         else
         {
             //Si non :
-            //On recupere le offset dans Rm pour factoriser le code
-            Rm = ins & 0xFFF;
+            //On recupere le offset dans index
+            index = ins & 0xFFF;
         }
 
         if (U == 1)
         {
-            Rn = Rn + Rm;
+            adresse = arm_read_register(p, Rn) + index;
         }
         else
         {
-            Rn = Rn - Rm;
+            adresse = arm_read_register(p, Rn) - index;
         }
         
-        if (L == 1)
-        {
-            //Load word
-            arm_read_word(p, Rn, &value_word);
-            arm_write_register(p, Rd, value_word);
+        if (P == 0)
+        {  
+            if (W == 0)
+            {
+                if (L == 1)
+                {
+                    //Load word
+                    arm_read_word(p, Rn, &value_word);
+                    arm_write_register(p, Rd, value_word);
+                }
+                else
+                {
+                    //Store word
+                    value_word = arm_read_register(p, Rd);
+                    arm_write_word(p, Rn, value_word);
+                }
+            }
+            else // W == 1
+            {
+                if (L == 1)
+                {
+                    //Load word
+                    arm_read_word(p, Rn, &value_word);
+                    arm_write_usr_register(p, Rd, value_word);
+                }
+                else
+                {
+                    //Store word
+                    value_word = arm_read_usr_register(p, Rd);
+                    arm_write_word(p, Rn, value_word);
+                }
+            }
+            arm_write_register(p, Rn, adresse);
         }
-        else
+        else // P == 1
         {
-            //Store word
-            value_word = arm_read_register(p, Rd);
-            arm_write_word(p, Rn, value_word);
+            if (W == 1)
+            {
+                arm_write_register(p, Rn, adresse);
+            }
+            if (L == 1)
+            {
+                //Load word
+                arm_read_word(p, adresse, &value_word);
+                arm_write_register(p, Rd, value_word);
+            }
+            else
+            {
+                //Store word
+                value_word = arm_read_register(p, Rd);
+                arm_write_word(p, adresse, value_word);
+            }
         }
     }
     
