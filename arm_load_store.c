@@ -34,13 +34,16 @@ int arm_load_store(arm_core p, uint32_t ins) {
     int S;
     int H;
     int I;
+    int Rd;
+    int U;
     
     int shift_imm;
     int shift;
     
+    int adresse;
     
     int valeur;
-    int address;
+    int Rn;
     
     uint32_t value_word;
     uint16_t value_half;
@@ -56,7 +59,7 @@ int arm_load_store(arm_core p, uint32_t ins) {
         I = (ins >> 22) & 1;
         
         rm = ins & 0b1111;
-        address = (ins >> 16) & 0b1111;
+        Rn = (ins >> 16) & 0b1111;
         
         
         shift_imm = (ins >> 7 ) &0b11111;
@@ -81,7 +84,7 @@ int arm_load_store(arm_core p, uint32_t ins) {
             //ROR ou RRX
         }
         
-        address = address + rm;
+        Rn = Rn + rm;
         //Si valeur brut
         if (I == 1)
         {
@@ -100,7 +103,7 @@ int arm_load_store(arm_core p, uint32_t ins) {
         if (L == 0 && S == 0 && H == 1)
         {
             //store halfword
-            arm_write_half(p,address,valeur);
+            arm_write_half(p,Rn,valeur);
         }
         else if(L == 0 && S == 1 && H == 0 )
         {
@@ -113,18 +116,18 @@ int arm_load_store(arm_core p, uint32_t ins) {
         else if (L == 1 && S == 0 && H == 1)
         {
             //load halfword unsigned
-            arm_read_half(p,address,&value_half);
+            arm_read_half(p,Rn,&value_half);
             
         }
         else if (L == 1 && S == 1 && H == 0)
         {
             //load byte signed
-            arm_read_byte(p,address,&value_byte);
+            arm_read_byte(p,Rn,&value_byte);
         }
         else if (L == 1 && S == 1 && H == 1)
         {
             //load halfword signed
-            arm_read_half(p,address,&value_half);
+            arm_read_half(p,Rn,&value_half);
         }
         else
         {
@@ -139,7 +142,7 @@ int arm_load_store(arm_core p, uint32_t ins) {
         
         I = (ins >> 25) & 1;
         rm = ins & 0b1111;
-        address = (ins >> 16) & 0b1111;
+        Rn = (ins >> 16) & 0b1111;
         
         
         shift_imm = (ins >> 7 ) &0b11111;
@@ -156,7 +159,19 @@ int arm_load_store(arm_core p, uint32_t ins) {
         {
             //Si non :
             //On recupere la valeur dans le registre
-            valeur = arm_read_register(p,(ins >> 12) & 0b1111);
+            U = (ins >> 23) & 1;
+            
+            Rd = (ins >> 12) & 0b1111;
+            arm_read_register(p,Rd,&adresse);
+            if (U == 1)
+            {
+              adresse = adresse + (ins & 0xFFF);
+            }
+            else //U == 0
+            {
+              adresse = adresse - (ins & 0xFFF);
+            }
+            valeur = arm_read_word(p,(ins >> 12) & 0b1111);
         }
         
         //Traitement pour un mot
@@ -179,22 +194,22 @@ int arm_load_store(arm_core p, uint32_t ins) {
             //ROR ou RRX
         }
         
-        address = address + rm;
+        Rn = Rn + rm;
         
         if (L == 1)
         {
             
             //Load word
-            arm_write_word(p,address,valeur);
+            arm_write_word(p,Rn,valeur);
         }
         else
         {
             //store word
-            arm_read_word(p,address,&value_word);
+            arm_read_word(p,Rn,&value_word);
         }
     }
     
-    return UNDEFINED_INSTRUCTION;
+    return 0_;
 }
 
 int arm_load_store_multiple(arm_core p, uint32_t ins) {
