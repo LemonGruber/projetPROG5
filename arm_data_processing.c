@@ -132,15 +132,17 @@ int arm_data_processing_immediate_msr(arm_core p, uint32_t ins) {
     
     uint32_t buff;
     
-    value_1 = arm_read_register(p,Rn);
-    value_2 = immed_8;
+    value_2 = arm_read_register(p,Rn);
+    value_1 = immed_8;
     
     
     immed_8 = immed_8 >> rotate_imm * 2;
-    value_2 = value_2 << (32-rotate_imm*2);
-    value_2 = immed_8 | value_2;        
+    value_1 = value_1 << (32-rotate_imm*2);
+    value_1 = immed_8 | value_1;        
     
     opcode(value_1, value_2, op, &value_1, &flags);
+    
+   // printf("\n Rd : %0x8",Rd)
     arm_write_register(p,Rd,value_1);
     
     

@@ -263,7 +263,10 @@ void afficher_memoire(memory m)
     int i = 0;
     for (i = 0; i < m->taille; i++)
     {
-        printf("indice : %d, valeur : %08x \n",i,m->data[i]);
+        if (m->data[i] != 0)
+        {
+            printf("indice : %d, valeur : %08x \n",i,m->data[i]);
+        }
     }
     printf("\n");
 }
