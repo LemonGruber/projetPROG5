@@ -28,9 +28,10 @@ Contact: Guillaume.Huard@imag.fr
 #include "registers.h"
 
 int arm_load_store(arm_core p, uint32_t ins) {
-    int B, H, I, L, P, S, U, W ;
+    int H, I, L, P, S, U, W ;
     int action, index, adresse, valeur;
     int Rm, Rd, Rn;
+//  int B;    
     
     int shift_imm;
     int shift;
@@ -38,61 +39,60 @@ int arm_load_store(arm_core p, uint32_t ins) {
     uint32_t value_word;
     uint16_t value_half;
     uint8_t value_byte;
+    uint8_t offset_8, truc;
    
+
+    W = (ins >> 21) & 1;
+    U = (ins >> 23) & 1;
+    P = (ins >> 24) & 1;
     action = ins >> 25 & 0b111;
-    if (action == 0)
+    if (action == 0) // demi et double mots
     {
         S = (ins >> 6) & 1;
         H = (ins >> 5) & 1;
         L = (ins >> 20) & 1;
         I = (ins >> 22) & 1;
         
-        Rm = ins & 0b1111;
         Rn = (ins >> 16) & 0b1111;
-        
-        
-        shift_imm = (ins >> 7 ) &0b11111;
-        shift = (ins >> 5) & 0b11;
-        
-        if (shift == 0b00)
-        {
-            //LSL (declage a gauche)
-            Rm = Rm << shift_imm;
-        }
-        else if (shift == 0b01)
-        {
-            //LSR (decalage a droite)
-            Rm = Rm >> shift_imm;
-        }
-        else if (shift == 0b10)
-        {
-            //ASR (decalage arithmetique a droite)
-        }
-        else if (shift == 0b11)
-        {
-            //ROR ou RRX
-        }
-        
-        Rn = Rn + Rm;
-        //Si valeur brut
+
         if (I == 1)
         {
-            //Alors:
-            //On recupere la valeur
-            valeur = (ins >> 12) & 0b1111;
+            offset_8 = ((ins >> 8) << 4) | (ins & 0b1111);
         }
         else
         {
-            //Si non :
-            //On recupere la valeur dans le registre
-            valeur = arm_read_register(p,(ins >> 12) & 0b1111);
+            offset_8 = ins & 0b1111; // offset au lie de Rm
         }
         
+        if (P == 0)
+        {
+            if (W == 1)
+            {
+                return UNDEFINED_INSTRUCTION; //UNPREDICTABLE;
+            }
+        }
+        
+        if (U == 1)
+        {
+            adresse = arm_read_register(p, Rn) + offset_8;
+        }
+        else
+        {
+            adresse = arm_read_register(p, Rn) - offset_8;
+        }
         
         if (L == 0 && S == 0 && H == 1)
         {
             //store halfword
-            arm_write_half(p,Rn,valeur);
+            if (P == 1 && W == 1)
+            {
+                arm_write_register(p, Rn, adresse);
+            }
+            arm_write_half(p,arm_read_register(p, Rn), valeur);
+            if (P ==0 && W == 0)
+            {
+                arm_write_register(p, Rn, adresse);
+            }
         }
         else if(L == 0 && S == 1 && H == 0 )
         {
@@ -105,18 +105,41 @@ int arm_load_store(arm_core p, uint32_t ins) {
         else if (L == 1 && S == 0 && H == 1)
         {
             //load halfword unsigned
-            arm_read_half(p,Rn,&value_half);
-            
+            if (P == 1 && W == 1)
+            {
+                arm_write_register(p, Rn, adresse);
+            }
+            arm_read_half(p,arm_read_register(p, Rn), &value_half);
+            if (P ==0 && W == 0)
+            {
+                arm_write_register(p, Rn, adresse);
+            }
         }
         else if (L == 1 && S == 1 && H == 0)
         {
             //load byte signed
-            arm_read_byte(p,Rn,&value_byte);
+            if (P == 1 && W == 1)
+            {
+                arm_write_register(p, Rn, adresse);
+            }
+            arm_read_byte(p,arm_read_register(p, Rn), &value_byte);
+            if (P ==0 && W == 0)
+            {
+                arm_write_register(p, Rn, adresse);
+            }
         }
         else if (L == 1 && S == 1 && H == 1)
         {
             //load halfword signed
-            arm_read_half(p,Rn,&value_half);
+            if (P == 1 && W == 1)
+            {
+                arm_write_register(p, Rn, adresse);
+            }
+            arm_read_half(p,arm_read_register(p, Rn), &value_half);
+            if (P ==0 && W == 0)
+            {
+                arm_write_register(p, Rn, adresse);
+            }
         }
         else
         {
@@ -124,16 +147,21 @@ int arm_load_store(arm_core p, uint32_t ins) {
         }
         //Traitement pour un demi mot
        
+        if (P == 1)
+        {
+            if (W == 1)
+            {
+                arm_write_register(p, Rn, adresse);
+            }
+        }
+
     }
     else
     {
         Rd = (ins >> 12) & 0b1111;
         Rn = (ins >> 16) & 0b1111;
         L = (ins >> 20) & 1;
-        W = (ins >> 21) & 1;
-        B = (ins >> 22) & 1;
-        U = (ins >> 23) & 1;
-        P = (ins >> 24) & 1;
+//        B = (ins >> 22) & 1;
         I = (ins >> 25) & 1;
 
         if (I == 1)
@@ -165,7 +193,7 @@ int arm_load_store(arm_core p, uint32_t ins) {
                 //ASR (decalage arithmetique a droite)
                 if (shift_imm == 0)
                 {
-                    if (((Rm >> 31) & 0b1) == 1)
+                    if (((Rm >> 31) & 1) == 1)
                     {
                         index = 0xFFFFFFFF;
                     }
@@ -193,7 +221,7 @@ int arm_load_store(arm_core p, uint32_t ins) {
                 }                
             }
         }
-        else
+        else // I == 0
         {
             //Si non :
             //On recupere le offset dans index
