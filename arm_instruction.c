@@ -58,6 +58,7 @@ static int arm_execute_instruction(arm_core p) {
     else if(bit_24 == 1 && bit_25 == 1 && bit_26 == 1 && bit_27 == 1)
     {
         //software interuption
+        result = SOFTWARE_INTERRUPT ;
     }
     else if (bit_4 == 1 && bit_24 == 0 && bit_25 == 1 && bit_26 == 1 && bit_27 == 1)
     {
@@ -110,7 +111,7 @@ static int arm_execute_instruction(arm_core p) {
     else if (bit_27 == 0 && bit_26 == 0 && bit_25 ==1 && bit_24 == 1 && bit_23 == 0 && bit_21 == 0 && bit_20 == 0)
     {
         //undifinded instruction
-        result = 1;
+        result = UNDEFINED_INSTRUCTION ;
     }
     else if (bit_27 == 0 && bit_26 == 0 && bit_25 ==1)
     {
@@ -142,24 +143,11 @@ static int arm_execute_instruction(arm_core p) {
         //data processing immediate shift
         result = arm_data_processing_shift(p,ins);
     }
+    else
+    {
+        
+    }
     return result;
-    
-    /*if (bit_27 == 0 && bit_26 == 1){
-      result = arm_load_store(p, ins);
-    }
-    else if (bit_27 == 0 && bit_26 == 0){
-      int bit_25 = (ins >> 25) & 1;
-      if (!bit_25){
-        result = arm_load_store(p, ins);
-      }
-      else {
-        result = 1;
-      }
-    }
-    else {
-      result = 1;
-    }
-    return result;*/
 }
 
 int arm_step(arm_core p) {

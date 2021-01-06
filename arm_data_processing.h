@@ -27,7 +27,7 @@ Contact: Guillaume.Huard@imag.fr
 /**
  * @file arm_data_processing.h
  * @author G.Huard, Vincent, Leandre, Yann
- * @date 05/01/2020
+ * @date 06/01/2020
  * @brief gere les cacules sur les donnees
  */
 #include <stdint.h>
@@ -46,7 +46,6 @@ int arm_data_processing_shift(arm_core p, uint32_t ins);
  * @param ins l'instruction en uint32_t
  * @return retourne 0 si tout va bien 1 si non
  * @brief effectue les calculs lorsque les data sont en valeur imediate
- * @todo a faire 
  */
 int arm_data_processing_immediate_msr(arm_core p, uint32_t ins);
 
@@ -57,7 +56,6 @@ int arm_data_processing_immediate_msr(arm_core p, uint32_t ins);
  * @param val la valeur de sortie (reste par defaut si on veux que les flags)
  * @param flag les flags des sortie d'opreration si desirer (0 si non)
  * @return retourne 0 si tout vas bien 1 si non
- * @bug faire les valeurs de V
  * @brief calcul entre 2 valeurs la valeur de sortie et/ou les flags
  */
 int opcode (uint32_t val_1, uint32_t val_2, uint8_t op,uint32_t *val, uint8_t *flag);
