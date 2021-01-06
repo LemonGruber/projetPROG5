@@ -232,3 +232,8 @@ void arm_print_state(arm_core p, FILE *out) {
         }
     }
 }
+
+void arm_afficher_mem (arm_core p)
+{
+    afficher_memoire(p->mem);
+}

@@ -101,7 +101,7 @@ int arm_data_processing_shift(arm_core p, uint32_t ins) {
    
     val_1 = arm_read_register(p,Rn);
     opcode(val_1,val_2,op,&value,&flags);
-    result = arm_write_register(p,Rd,value);      
+    arm_write_register(p,Rd,value);      
     
     if (S == 1)
     {
@@ -118,8 +118,46 @@ int arm_data_processing_shift(arm_core p, uint32_t ins) {
 
 int arm_data_processing_immediate_msr(arm_core p, uint32_t ins) {
     
+    uint8_t op = (ins >> 21) & 0xF;
+    uint8_t S = (ins >> 20) & 1;
+    uint8_t Rn = (ins >> 16) & 0xF;
+    uint8_t Rd = (ins >> 12) & 0xF;
+    uint8_t rotate_imm = (ins >> 8) & 0xF;
+    uint8_t immed_8 = (ins >> 0) & 0xFF;
     
-    return UNDEFINED_INSTRUCTION;
+    
+    uint32_t value_1;
+    uint32_t value_2;
+    uint8_t flags;
+    
+    uint32_t buff;
+    
+    value_2 = arm_read_register(p,Rn);
+    value_1 = immed_8;
+    
+    
+    immed_8 = immed_8 >> rotate_imm * 2;
+    value_1 = value_1 << (32-rotate_imm*2);
+    value_1 = immed_8 | value_1;        
+    
+    opcode(value_1, value_2, op, &value_1, &flags);
+    
+   // printf("\n Rd : %0x8",Rd)
+    arm_write_register(p,Rd,value_1);
+    
+    
+    if (S == 1)
+    {
+        buff = flags;
+        ins = ins & ~(UserMask);
+        ins = ins | (buff << 28);
+    }
+    
+    
+    
+    
+    
+    return 0;
 }
 
 int opcode (uint32_t val_1, uint32_t val_2, uint8_t op,uint32_t *val, uint8_t *flags)
