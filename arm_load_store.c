@@ -28,10 +28,9 @@ Contact: Guillaume.Huard@imag.fr
 #include "registers.h"
 
 int arm_load_store(arm_core p, uint32_t ins) {
-    int H, I, L, P, S, U, W ;
-    int action, index, adresse, valeur;
-    int Rm, Rd, Rn;
-//  int B;    
+    int B, H, I, L, P, S, U, W;
+    int action, index, adresse;
+    int Rm, Rd, Rn;    
     
     int shift_imm;
     int shift;
@@ -39,9 +38,10 @@ int arm_load_store(arm_core p, uint32_t ins) {
     uint32_t value_word;
     uint16_t value_half;
     uint8_t value_byte;
-    uint8_t offset_8, truc;
+    uint8_t offset_8;
    
-
+    Rd = (ins >> 12) & 0b1111;
+    Rn = (ins >> 16) & 0b1111;
     W = (ins >> 21) & 1;
     U = (ins >> 23) & 1;
     P = (ins >> 24) & 1;
@@ -52,8 +52,6 @@ int arm_load_store(arm_core p, uint32_t ins) {
         H = (ins >> 5) & 1;
         L = (ins >> 20) & 1;
         I = (ins >> 22) & 1;
-        
-        Rn = (ins >> 16) & 0b1111;
 
         if (I == 1)
         {
@@ -88,7 +86,8 @@ int arm_load_store(arm_core p, uint32_t ins) {
             {
                 arm_write_register(p, Rn, adresse);
             }
-            arm_write_half(p,arm_read_register(p, Rn), valeur);
+            value_half = arm_read_register(p, Rd);
+            arm_write_half(p, arm_read_register(p, Rn), value_half);
             if (P ==0 && W == 0)
             {
                 arm_write_register(p, Rn, adresse);
@@ -110,6 +109,7 @@ int arm_load_store(arm_core p, uint32_t ins) {
                 arm_write_register(p, Rn, adresse);
             }
             arm_read_half(p,arm_read_register(p, Rn), &value_half);
+            arm_write_register(p, Rd, value_half);
             if (P ==0 && W == 0)
             {
                 arm_write_register(p, Rn, adresse);
@@ -123,6 +123,7 @@ int arm_load_store(arm_core p, uint32_t ins) {
                 arm_write_register(p, Rn, adresse);
             }
             arm_read_byte(p,arm_read_register(p, Rn), &value_byte);
+            arm_write_register(p, Rd, value_byte);
             if (P ==0 && W == 0)
             {
                 arm_write_register(p, Rn, adresse);
@@ -136,6 +137,7 @@ int arm_load_store(arm_core p, uint32_t ins) {
                 arm_write_register(p, Rn, adresse);
             }
             arm_read_half(p,arm_read_register(p, Rn), &value_half);
+            arm_write_register(p, Rd, value_byte);
             if (P ==0 && W == 0)
             {
                 arm_write_register(p, Rn, adresse);
@@ -145,7 +147,6 @@ int arm_load_store(arm_core p, uint32_t ins) {
         {
             //couille
         }
-        //Traitement pour un demi mot
        
         if (P == 1)
         {
@@ -158,8 +159,6 @@ int arm_load_store(arm_core p, uint32_t ins) {
     }
     else
     {
-        Rd = (ins >> 12) & 0b1111;
-        Rn = (ins >> 16) & 0b1111;
         L = (ins >> 20) & 1;
 //        B = (ins >> 22) & 1;
         I = (ins >> 25) & 1;
@@ -217,7 +216,7 @@ int arm_load_store(arm_core p, uint32_t ins) {
                 }
                 else
                 {
-                    index = (arm_read_register(p, Rm) >> shift_imm) & (arm_read_register(p, Rm) << (32-shift_imm));
+                    index = (arm_read_register(p, Rm) >> shift_imm) | (arm_read_register(p, Rm) << (32-shift_imm));
                 }                
             }
         }
@@ -243,30 +242,59 @@ int arm_load_store(arm_core p, uint32_t ins) {
             {
                 if (L == 1)
                 {
-                    //Load word
-                    arm_read_word(p, Rn, &value_word);
-                    arm_write_register(p, Rd, value_word);
+                    if (B == 1) // Load unsigned byte
+                    {
+                        arm_read_byte(p, arm_read_register(p, Rn), &value_byte);
+                        arm_write_register(p, Rd, value_byte);
+                    }
+                    else       //Load word
+                    {
+                        arm_read_word(p, arm_read_register(p, Rn), &value_word);
+                        arm_write_register(p, Rd, value_word);
+                    }
                 }
                 else
                 {
-                    //Store word
-                    value_word = arm_read_register(p, Rd);
-                    arm_write_word(p, Rn, value_word);
+                    if (B == 1) // Store unsigned byte
+                    {
+                        value_byte = arm_read_register(p, Rd);
+                        arm_write_byte(p, arm_read_register(p, Rn), value_byte);
+                    }
+                    else        // Store word
+                    {
+                        value_word = arm_read_register(p, Rd);
+                        arm_write_word(p, arm_read_register(p, Rn), value_word);
+                    }
                 }
             }
             else // W == 1
             {
                 if (L == 1)
                 {
-                    //Load word
-                    arm_read_word(p, Rn, &value_word);
-                    arm_write_usr_register(p, Rd, value_word);
+                    if (B == 1) //Load unsigned byte
+                    {
+                        arm_read_byte(p, arm_read_register(p, Rn), &value_byte);
+                        arm_write_usr_register(p, Rd, value_byte);
+                    }
+                    else
+                    {
+                        //Load word
+                        arm_read_word(p, arm_read_register(p, Rn), &value_word);
+                        arm_write_usr_register(p, Rd, value_word);
+                    }
                 }
                 else
                 {
-                    //Store word
-                    value_word = arm_read_usr_register(p, Rd);
-                    arm_write_word(p, Rn, value_word);
+                    if (B == 1) // Store unsigned byte
+                    {
+                        value_byte = arm_read_usr_register(p, Rd);
+                        arm_write_byte(p, arm_read_register(p, Rn), value_byte);
+                    }
+                    else        //Store word
+                    {
+                        value_word = arm_read_usr_register(p, Rd);
+                        arm_write_word(p, Rn, value_word);
+                    }
                 }
             }
             arm_write_register(p, Rn, adresse);
