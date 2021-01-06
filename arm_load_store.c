@@ -160,7 +160,7 @@ int arm_load_store(arm_core p, uint32_t ins) {
     else
     {
         L = (ins >> 20) & 1;
-//        B = (ins >> 22) & 1;
+        B = (ins >> 22) & 1;
         I = (ins >> 25) & 1;
 
         if (I == 1)
