@@ -33,14 +33,13 @@ static int arm_execute_instruction(arm_core p) {
     int result;
     
     result = arm_fetch( p, &ins);
-    
-    uint8_t bit_31 = (ins >> 31) & 1;
+    /*  uint8_t bit_31 = (ins >> 31) & 1;
     uint8_t bit_30 = (ins >> 30) & 1;
     uint8_t bit_29 = (ins >> 29) & 1;
     uint8_t bit_28 = (ins >> 28) & 1;
     uint8_t bit_27 = (ins >> 27) & 1;
     uint8_t bit_26 = (ins >> 26) & 1;
-    uint8_t bit_25 = (ins >> 25) & 1;
+    uint8_t bit_25 = (ins >> 25) & 1;*/
     uint8_t bit_24 = (ins >> 24) & 1;
     uint8_t bit_23 = (ins >> 23) & 1;
     uint8_t bit_22 = (ins >> 22) & 1;
@@ -50,103 +49,122 @@ static int arm_execute_instruction(arm_core p) {
     uint8_t bit_6 = (ins >> 6) & 1;
     uint8_t bit_5 = (ins >> 5) & 1;
     uint8_t bit_4 = (ins >> 4) & 1;
-    
-    if (bit_31 == 1 && bit_30 == 1 && bit_29 == 1 && bit_28 == 1)
-    {
-        //unconditional instruction
+    uint8_t champ;
+
+    champ = (uint8_t) ((ins & 0xE000000) >> 25);
+    switch (champ){
+        case 0:
+            switch (bit_4){
+                case 0:
+                    if (bit_24 == 1 && bit_23 == 0 && bit_20 == 0)
+                    {             
+                        // Miscellaneous instruction
+                        result = arm_miscellaneous(p,ins);
+                    }
+                    else
+                    {
+                        // Data processing immed_shift
+                        result = arm_data_processing_shift(p,ins);
+                    }
+                    break;
+                case 1:
+                    switch (bit_7){
+                        case 0:
+                            if (bit_24 == 1 && bit_23 == 0 && bit_20 == 0)
+                            {
+                                // Miscellaneous instruction
+                                result = arm_miscellaneous(p,ins);
+                            }
+                            else 
+                            {
+                                // Data processing register shift
+                                result = arm_data_processing_shift(p,ins);
+                            }
+                            break;
+                        case 1: // A vérifier !!! Possiblement mauvaise fonction
+                            // Multiplies Extra load/stores
+                            result = arm_load_store(p,ins);
+                            break;
+                    }
+                    break;
+            }
+            break;
+        case 1:
+            if (bit_24 == 1 && bit_23 == 0 && bit_20 == 0)
+            {
+                switch (bit_21){
+                    case 0:
+                        // Endefined instruction
+                        result = UNDEFINED_INSTRUCTION ;
+                        break;
+                    case 1:
+                        // Move immeditate to status register
+                        break;
+                }
+            }
+            else
+            {
+                // Data processing immediat
+                result = arm_data_processing_shift(p,ins);
+            }
+            break;
+        case 2:
+            // Load Sotre imme offset
+            result = arm_load_store(p,ins);
+            break;
+        case 3:
+            switch (bit_4){
+                case 0:
+                    // Load store register offset
+                    result = arm_load_store(p,ins);
+                    break;
+                case 1:
+                    if (bit_20 == 1 && bit_21 == 1 && bit_22 == 1 && bit_23 == 1 && bit_24 == 1 && bit_5 == 1 && bit_6 == 1 && bit_7 == 1)
+                    {
+                        // Architecture undefined
+                        result = 1;
+                    }
+                    else
+                    {
+                        // Media instruction
+                    }
+                break;
+            }
+            break;
+        case 4:
+            // Load Store multiple
+            result = arm_load_store_multiple(p,ins);
+            break;
+        case 5:
+            // Branch and branch link
+            result = arm_branch(p,ins);
+            break;
+        case 6:
+            // Coprocessor load store and double register transfer
+            result = arm_coprocessor_load_store(p,ins);
+            break;
+        case 7:
+            switch (bit_24){
+                case 0:
+                    switch (bit_4){
+                        case 0:
+                            // Coprocessor data processing
+                            result = arm_coprocessor_others_swi(p, ins);
+                            break;
+                        case 1:
+                            // Coprocessor register transfer
+                            result = arm_coprocessor_others_swi(p, ins);
+                            break;
+                    }
+                    break;
+                case 1:
+                    // Software interrupt
+                    result = SOFTWARE_INTERRUPT ;
+                    break;
+            }
+            break;
     }
-    else if(bit_24 == 1 && bit_25 == 1 && bit_26 == 1 && bit_27 == 1)
-    {
-        //software interuption
-        result = SOFTWARE_INTERRUPT ;
-    }
-    else if (bit_4 == 1 && bit_24 == 0 && bit_25 == 1 && bit_26 == 1 && bit_27 == 1)
-    {
-        //coprossesor register transfere
-        result = arm_coprocessor_others_swi(p,ins);
-    }
-    else if (bit_4 == 0 && bit_24 == 0 && bit_25 == 1 && bit_26 == 1 && bit_27 == 1)
-    {
-        //coprossesor data processing
-        result = arm_coprocessor_others_swi(p,ins);
-    }
-    else if (bit_25 == 0 && bit_26 == 1 && bit_27 == 1)
-    {
-        //copros load/store
-        result = arm_coprocessor_load_store(p,ins);
-    }
-    else if (bit_25 == 1 && bit_26 == 0 && bit_27 == 1)
-    {
-        //branchement link
-        result = arm_branch(p,ins);
-    }
-    else if (bit_25 == 0 && bit_26 == 0 && bit_27 == 1)
-    {
-        //multiple load/store
-        result = arm_load_store_multiple(p,ins);
-    }
-    else if (bit_27 == 0 && bit_26 == 1 && bit_25 == 1 && bit_20 == 1 && bit_21 == 1 && bit_22 == 1 && bit_23 == 1 && bit_24 == 1 && bit_4 == 1 && bit_5 == 1 && bit_6 == 1 && bit_7 == 1)
-    {
-        //Architecturaly undifined
-        result = 1;
-    }
-    else if (bit_27 == 0 && bit_26 == 1 && bit_25 == 1 && bit_4 == 1)
-    {
-        //media instruction
-    }
-    else if (bit_27 == 0 && bit_26 == 1 && bit_25 == 1 && bit_4 == 0)
-    {
-        //register offset load/store
-        result = arm_load_store(p,ins);
-    }
-    else if (bit_27 == 0 && bit_26 == 1 && bit_25 == 0)
-    {
-        //load store immadate offset
-        result = arm_load_store(p,ins);
-    }
-    else if (bit_27 == 0 && bit_26 == 0 && bit_25 == 1 && bit_24 == 1 && bit_23 == 0 && bit_21 == 1 && bit_20 == 0)
-    {
-        //move immediate to statue register
-    }
-    else if (bit_27 == 0 && bit_26 == 0 && bit_25 ==1 && bit_24 == 1 && bit_23 == 0 && bit_21 == 0 && bit_20 == 0)
-    {
-        //undifinded instruction
-        result = UNDEFINED_INSTRUCTION ;
-    }
-    else if (bit_27 == 0 && bit_26 == 0 && bit_25 ==1)
-    {
-        //data processing imediant
-        result = arm_data_processing_immediate_msr(p,ins);
-    }
-    else if (bit_27 == 0 && bit_26 == 0 && bit_25 ==0 && bit_7 == 1 && bit_4 == 1)
-    {
-        //extra ou multiple load/store 
-        result = arm_load_store(p,ins);
-    }
-    else if (bit_27 == 0 && bit_26 == 0 && bit_25 ==0 && bit_24 == 1 && bit_23 == 0 && bit_20 == 0 && bit_7 == 0 && bit_4 == 1)
-    {
-        //miscellinious instruction
-        result = arm_miscellaneous(p,ins);
-    }
-    else if (bit_27 == 0 && bit_26 == 0 && bit_25 ==0 && bit_7 == 0 && bit_4 == 1)
-    {
-        //data processing register shift
-        result = arm_data_processing_shift(p,ins);
-    }
-    else if (bit_27 == 0 && bit_26 == 0 && bit_25 ==0 && bit_4 == 1)
-    {
-        //miscellinious instruction
-        result = arm_miscellaneous(p,ins);
-    }
-    else if (bit_27 == 0 && bit_26 == 0 && bit_25 ==0 && bit_4 == 0)
-    {
-        //data processing immediate shift
-        result = arm_data_processing_shift(p,ins);
-    }
-    else
-    {
-        
-    }
+
     return result;
 }
 

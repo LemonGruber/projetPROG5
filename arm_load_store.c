@@ -96,10 +96,12 @@ int arm_load_store(arm_core p, uint32_t ins) {
         else if(L == 0 && S == 1 && H == 0 )
         {
             //load double
+            // Non pris en compte. #TODO
         }
         else if (L == 0 && S == 1 && H == 1)
         {
             //store double
+            // Non pris en compte. #TODO
         }
         else if (L == 1 && S == 0 && H == 1)
         {
