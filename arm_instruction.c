@@ -83,7 +83,7 @@ static int arm_execute_instruction(arm_core p) {
                             break;
                         case 1: // A vérifier !!! Possiblement mauvaise fonction
                             // Multiplies Extra load/stores
-                            result = arm_multiplie_extra(p,ins);
+//                            result = arm_multiplie_extra(p,ins);
                             break;
                     }
                     break;

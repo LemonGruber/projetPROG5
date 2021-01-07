@@ -55,4 +55,7 @@ int arm_load_store_multiple(arm_core p, uint32_t ins);
  */
 int arm_coprocessor_load_store(arm_core p, uint32_t ins);
 
+
+void write_load_reg_mem(arm_core p, int adresse, int Rd, int L, int B);
+
 #endif
