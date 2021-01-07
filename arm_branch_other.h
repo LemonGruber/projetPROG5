@@ -1,32 +1,70 @@
 /*
-Armator - simulateur de jeu d'instruction ARMv5T à but pédagogique
+Armator - simulateur de jeu d'instruction ARMv5T ï¿½ but pï¿½dagogique
 Copyright (C) 2011 Guillaume Huard
 Ce programme est libre, vous pouvez le redistribuer et/ou le modifier selon les
-termes de la Licence Publique Générale GNU publiée par la Free Software
-Foundation (version 2 ou bien toute autre version ultérieure choisie par vous).
+termes de la Licence Publique Gï¿½nï¿½rale GNU publiï¿½e par la Free Software
+Foundation (version 2 ou bien toute autre version ultï¿½rieure choisie par vous).
 
-Ce programme est distribué car potentiellement utile, mais SANS AUCUNE
+Ce programme est distribuï¿½ car potentiellement utile, mais SANS AUCUNE
 GARANTIE, ni explicite ni implicite, y compris les garanties de
-commercialisation ou d'adaptation dans un but spécifique. Reportez-vous à la
-Licence Publique Générale GNU pour plus de détails.
+commercialisation ou d'adaptation dans un but spï¿½cifique. Reportez-vous ï¿½ la
+Licence Publique Gï¿½nï¿½rale GNU pour plus de dï¿½tails.
 
-Vous devez avoir reçu une copie de la Licence Publique Générale GNU en même
-temps que ce programme ; si ce n'est pas le cas, écrivez à la Free Software
+Vous devez avoir reï¿½u une copie de la Licence Publique Gï¿½nï¿½rale GNU en mï¿½me
+temps que ce programme ; si ce n'est pas le cas, ï¿½crivez ï¿½ la Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307,
-États-Unis.
+ï¿½tats-Unis.
 
 Contact: Guillaume.Huard@imag.fr
-	 Bâtiment IMAG
+	 Bï¿½timent IMAG
 	 700 avenue centrale, domaine universitaire
-	 38401 Saint Martin d'Hères
+	 38401 Saint Martin d'Hï¿½res
 */
 #ifndef __ARM_BRANCH_OTHER_H__
 #define __ARM_BRANCH_OTHER_H__
+
+/**
+ * @file arm_branch_other.h
+ * @author G.Huard, Vincent, Yann
+ * @date 06/01/2021
+ * @brief gere les fonctions de branchement, les miscellaneous, et les coprocessor other 
+ * @todo comprendre ce qu'en les miscellaneous arm_branch_other.h ligne 31
+ */
 #include <stdint.h>
 #include "arm_core.h"
 
+/**
+ * @param p les information machine sous forme de structure de arm_core
+ * @param ins l'instruction en type uint32_t
+ * @return 0 si tout va bien 1 si non
+ * @brief gere toute les fonctions de branchement "simple"
+ */
 int arm_branch(arm_core p, uint32_t ins);
+
+/**
+ * @param p les information machine sous forme de structure de arm_core
+ * @param ins l'instruction en type uint32_t
+ * @return 0 si tout va bien 1 si non
+ * @brief gere toutes les fonction au niveau coprocesseur sauf, celle de load et store
+ */
 int arm_coprocessor_others_swi(arm_core p, uint32_t ins);
+
+/**
+ * @param p les information machine sous forme de structure de arm_core
+ * @param ins l'instruction en type uint32_t
+ * @return 0 si tout va bien 1 si non de type int
+ * @brief gere les fonctions miscellaneous
+ */
 int arm_miscellaneous(arm_core p, uint32_t ins);
+
+
+/**
+ * @param p les information machine sous forme de structure de arm_core
+ * @param cond la contion a tester avec son opcode de type uint8_t
+ * @param retour booleen de type char (0 si la condition est fausse 1 si non) de type pointeur de char
+ * @return 0 si tout vas bien 1 si non de type int
+ * @brief verifier si la condition est respecter ou non
+ */
+int cond_fonct (arm_core p, uint8_t cond, char *retour);
 
 #endif
