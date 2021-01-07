@@ -31,9 +31,8 @@ Contact: Guillaume.Huard@imag.fr
 int arm_data_processing_shift(arm_core p, uint32_t ins) {
     
     int result = 0;
-    
-    int address;
-    
+   
+    printf("je suis ici pour une action \n");
     uint8_t bit_4 = (ins >> 4) &1;
     
     uint8_t bit_5 = (ins >> 5) &1;    //* Type de shift
@@ -58,7 +57,9 @@ int arm_data_processing_shift(arm_core p, uint32_t ins) {
     uint32_t value = 0;
     
     uint8_t flags = 0;
+    uint32_t buff_flags;
     
+   
     
     if (bit_4 == 0)
     {
@@ -100,16 +101,15 @@ int arm_data_processing_shift(arm_core p, uint32_t ins) {
     }
    
     val_1 = arm_read_register(p,Rn);
-    opcode(val_1,val_2,op,&value,&flags);
+    opcode(p,val_1,val_2,op,&value,&flags);
     arm_write_register(p,Rd,value);      
     
     if (S == 1)
     {
-        buff = flags;
-        ins = ins & ~(UserMask);
-        ins = ins | (buff << 20);
-        address = arm_read_register(p,15);
-        arm_write_word(p,address,ins);
+        buff_flags = flags;
+        buff = arm_read_cpsr(p);
+        buff = (buff & ~(UserMask)) | (buff_flags << 28);
+        arm_write_cpsr(p,buff);
     }
     
             
@@ -117,7 +117,12 @@ int arm_data_processing_shift(arm_core p, uint32_t ins) {
 }
 
 int arm_data_processing_immediate_msr(arm_core p, uint32_t ins) {
+    return UNDEFINED_INSTRUCTION ;
+}
+
+int arm_data_processing_immediate(arm_core p, uint32_t ins) {
     
+    printf("\n ici pour le MOV \n");
     uint8_t op = (ins >> 21) & 0xF;
     uint8_t S = (ins >> 20) & 1;
     uint8_t Rn = (ins >> 16) & 0xF;
@@ -130,17 +135,20 @@ int arm_data_processing_immediate_msr(arm_core p, uint32_t ins) {
     uint32_t value_2;
     uint8_t flags;
     
+    uint32_t buff_flags;
     uint32_t buff;
     
-    value_2 = arm_read_register(p,Rn);
     value_1 = immed_8;
+    
+    value_2 = arm_read_register(p,Rn);
     
     
     immed_8 = immed_8 >> rotate_imm * 2;
     value_1 = value_1 << (32-rotate_imm*2);
     value_1 = immed_8 | value_1;        
     
-    opcode(value_1, value_2, op, &value_1, &flags);
+    printf("value_1 : %8.8x \n",value_1);
+    opcode(p,value_1, value_2, op, &value_1, &flags);
     
    // printf("\n Rd : %0x8",Rd)
     arm_write_register(p,Rd,value_1);
@@ -148,105 +156,204 @@ int arm_data_processing_immediate_msr(arm_core p, uint32_t ins) {
     
     if (S == 1)
     {
-        buff = flags;
-        ins = ins & ~(UserMask);
-        ins = ins | (buff << 28);
+        buff_flags = flags;
+        buff = arm_read_cpsr(p);
+        buff = (buff & ~(UserMask)) | (buff_flags << 28);
+        arm_write_cpsr(p,buff);
     }
-    
-    
-    
-    
-    
     return 0;
 }
 
-int opcode (uint32_t val_1, uint32_t val_2, uint8_t op,uint32_t *val, uint8_t *flags)
+int opcode (arm_core p,uint32_t val_1, uint32_t val_2, uint8_t op,uint32_t *val, uint8_t *flags)
 {
     uint8_t bit_0 = (op >> 0) & 1;
     uint8_t bit_1 = (op >> 1) & 1;
     uint8_t bit_2 = (op >> 2) & 1;
     uint8_t bit_3 = (op >> 3) & 1;
     
-    long int buff_1;
-    long int buff_2;
+    long int valeur_theorique;
+    uint32_t valeur_reel;
     
-    flags = 0;
+    uint32_t buff_1 = val_1;
+    uint32_t buff_2 = val_2;
+    
+    long int val_1_int = val_1;
+    long int val_2_int = val_2;
+    
+    char ok_flag  = 0;
+     
+    uint32_t cpsr_read = arm_read_cpsr(p);
+    uint8_t Z_flag = ((cpsr_read >> Z) & 1);
+    uint8_t N_flag = ((cpsr_read >> N) & 1);
+    uint8_t C_flag = ((cpsr_read >> C) & 1);
+    uint8_t V_flag = ((cpsr_read >> V) & 1);
+    
+    *flags = 0;
+    
+    printf("valeur op : %d%d%d%d",bit_3,bit_2,bit_1,bit_0);
     
     if (bit_0 == 0 && bit_1 == 0 && bit_2 == 0 && bit_3 == 0)
     {
         //AND (et bit a bit)
-        *val = val_1 & val_2;
+        valeur_reel = val_1 & val_2;
+        valeur_theorique = valeur_reel;
     }
     else if (bit_0 == 1 && bit_1 == 0 && bit_2 == 0 && bit_3 == 0)
     {
         //EOR (ou exclusif logique bit a bit)
-        *val = val_1 ^ val_2;
+        valeur_reel = val_1 ^ val_2;
+        valeur_theorique = valeur_reel;
     }
     else if (bit_0 == 0 && bit_1 == 1 && bit_2 == 0 && bit_3 == 0)
     {
         //SUB (soustration)
-        *val = val_2 - val_1;
+        valeur_reel = val_2 - val_1;
+        valeur_theorique = val_2_int - val_1_int;
+        
+        C_flag = 0;
+        V_flag = 0;
+        
+        if (valeur_reel != valeur_theorique)
+        {
+            C_flag = 1;
+        }
+        if ((((val_2 >> 31) & 1) == ((val_1 >> 31) & 1)) && (((valeur_reel >> 31) & 1) == 1))
+        {
+            V_flag = 1 ^ (C_flag & 1);
+        }
+        else if ((((val_2 >> 31) & 1) != ((val_1 >> 31) & 1)) && (((valeur_reel >> 31) & 1) != 1))
+        {
+            V_flag = 1 ^ (C_flag & 1);
+        }
+        else
+        {
+            V_flag = 0 ^ (C_flag & 1);
+        }
+        
     }
     else if (bit_0 == 1 && bit_1 == 1 && bit_2 == 0 && bit_3 == 0)
     {
         //RSB (soustraction inverser)
-        *val = val_1 - val_2;
+        valeur_reel = val_1 - val_2;
+        valeur_theorique = val_1_int - val_2_int;
+        
+        C_flag = 0;
+        V_flag = 0;
+        
+        if (valeur_reel != valeur_theorique)
+        {
+            C_flag = 1;
+        }
+        if ((((val_2 >> 31) & 1) == ((val_1 >> 31) & 1)) && (((valeur_reel >> 31) & 1) == 1))
+        {
+            V_flag = 1 ^ (C_flag & 1);
+        }
+        else if ((((val_2 >> 31) & 1) != ((val_1 >> 31) & 1)) && (((valeur_reel >> 31) & 1) != 1))
+        {
+            V_flag = 1 ^ (C_flag & 1);
+        }
+        else
+        {
+            V_flag = 0 ^ (C_flag & 1);
+        }
     }
     else if (bit_0 == 0 && bit_1 == 0 && bit_2 == 1 && bit_3 == 0)
     {
         //ADD (addition)
-        *val = val_1 + val_2;
+        valeur_reel = val_1 + val_2;
+        valeur_theorique = val_1_int + val_2_int;
+        
+        C_flag = 0;
+        V_flag = 0;
+        if (valeur_reel != valeur_theorique)
+        {
+            C_flag = 1;
+        }
+        if ((((val_2 >> 31) & 1) == ((val_1 >> 31) & 1)) && (((valeur_reel >> 31) & 1) == 1))
+        {
+            V_flag = 1 ^ (C_flag & 1);
+        }
+        else if ((((val_2 >> 31) & 1) != ((val_1 >> 31) & 1)) && (((valeur_reel >> 31) & 1) != 1))
+        {
+            V_flag = 1 ^ (C_flag & 1);
+        }
+        else
+        {
+            V_flag = 0 ^ (C_flag & 1);
+        }
     }
     else if (bit_0 == 1 && bit_1 == 0 && bit_2 == 1 && bit_3 == 0)
     {
         //ADC (addition avec le carry)
-        buff_1 = val_1;
-        buff_2 = val_2;
-        buff_1 = buff_1 + buff_2;
-        *val = val_1 + val_2;
+        valeur_reel = val_1 + val_2;
+        valeur_theorique = val_1_int + val_2_int + C_flag;
         
-        if (*val == buff_1)
+        C_flag = 0;
+        V_flag = 0;
+        if (valeur_reel != valeur_theorique)
         {
-            *flags = *flags | (0 << 2);
+            C_flag = 1;
+        }
+        if ((((val_2 >> 31) & 1) == ((val_1 >> 31) & 1)) && (((valeur_reel >> 31) & 1) == 1))
+        {
+            V_flag = 1 ^ (C_flag & 1);
+        }
+        else if ((((val_2 >> 31) & 1) != ((val_1 >> 31) & 1)) && (((valeur_reel >> 31) & 1) != 1))
+        {
+            V_flag = 1 ^ (C_flag & 1);
         }
         else
         {
-            *flags = *flags | (1 << 2);
+            V_flag = 0 ^ (C_flag & 1);
         }
         
     }
     else if (bit_0 == 0 && bit_1 == 1 && bit_2 == 1 && bit_3 == 0)
     {
         //SBC (soutraction avec carry)
-        buff_1 = val_1;
-        buff_2 = val_2;
-        buff_1 = buff_2 - buff_1;
-        *val = val_2 - val_1;
+        valeur_reel = val_2 - val_1;
+        valeur_theorique = val_2 - val_2 - (~(C_flag & 1));
         
-        if (*val == buff_1)
+        C_flag = 0;
+        V_flag = 0;
+        if (valeur_reel != valeur_theorique)
         {
-            *flags = *flags | (0 << 2);
+            C_flag = 1;
+        }
+        if ((((val_2 >> 31) & 1) == ((val_1 >> 31) & 1)) && (((valeur_reel >> 31) & 1) == 1))
+        {
+            V_flag = 1 ^ (C_flag & 1);
+        }
+        else if ((((val_2 >> 31) & 1) != ((val_1 >> 31) & 1)) && (((valeur_reel >> 31) & 1) != 1))
+        {
+            V_flag = 1 ^ (C_flag & 1);
         }
         else
         {
-            *flags = *flags | (1 << 2);
+            V_flag = 0 ^ (C_flag & 1);
         }
     }
     else if (bit_0 == 1 && bit_1 == 1 && bit_2 == 1 && bit_3 == 0)
     {
         //RSC (soustraction inverse avec carry)
-        buff_1 = val_1;
-        buff_2 = val_2;
-        buff_1 = buff_1 - buff_2;
-        *val = val_1 - val_2;
+        valeur_reel = val_1 - val_2;
+        valeur_theorique = val_1 - val_2 - (~(C_flag & 1));
         
-        if (*val == buff_1)
+        if (valeur_reel != valeur_theorique)
         {
-            *flags = *flags | (0 << 2);
+            C_flag = 1;
+        }
+        if ((((val_2 >> 31) & 1) == ((val_1 >> 31) & 1)) && (((valeur_reel >> 31) & 1) == 1))
+        {
+            V_flag = 1 ^ (C_flag & 1);
+        }
+        else if ((((val_2 >> 31) & 1) != ((val_1 >> 31) & 1)) && (((valeur_reel >> 31) & 1) != 1))
+        {
+            V_flag = 1 ^ (C_flag & 1);
         }
         else
         {
-            *flags = *flags | (1 << 2);
+            V_flag = 0 ^ (C_flag & 1);
         }
     }
     else if (bit_0 == 0 && bit_1 == 0 && bit_2 == 0 && bit_3 == 1)
@@ -262,6 +369,8 @@ int opcode (uint32_t val_1, uint32_t val_2, uint8_t op,uint32_t *val, uint8_t *f
         {
             *flags = *flags | (1 << 4);
         }
+        ok_flag = 1;
+        
         
     }
     else if (bit_0 == 1 && bit_1 == 0 && bit_2 == 0 && bit_3 == 1)
@@ -276,6 +385,7 @@ int opcode (uint32_t val_1, uint32_t val_2, uint8_t op,uint32_t *val, uint8_t *f
         {
             *flags = *flags | (1 << 4);
         }
+        ok_flag = 1;
         
     }
     else if (bit_0 == 0 && bit_1 == 1 && bit_2 == 0 && bit_3 == 1)
@@ -306,6 +416,7 @@ int opcode (uint32_t val_1, uint32_t val_2, uint8_t op,uint32_t *val, uint8_t *f
         {
             *flags = *flags | (((*flags >> 1) & 1) ^ 1); 
         }
+        ok_flag = 1;
     }
     else if (bit_0 == 1 && bit_1 == 1 && bit_2 == 0 && bit_3 == 1)
     {
@@ -328,36 +439,84 @@ int opcode (uint32_t val_1, uint32_t val_2, uint8_t op,uint32_t *val, uint8_t *f
             *flags = *flags | (1 << 1);
         }
         
-        if ((((buff_1 >> 31) & 1) != ((val_2 >> 31) & 1)) && (((val_1 >> 31) & 1) == 0)  ) //V
+        if (((((buff_1 >> 31) & 1) != ((val_2 >> 31) & 1))) && (((val_1 >> 31) & 1) == 0)  ) //V
         {
             *flags = *flags | (((*flags >> 1) & 1) ^ 1); 
         }
-        else if ((((buff_1 >> 31) & 1) == (val_2 >> 31)) & 1 && (((val_1 >> 31) & 1) == 1)  ) 
+        else if (((((buff_1 >> 31) & 1) == (val_2 >> 31))) & 1 && (((val_1 >> 31) & 1) == 1)  ) 
         {
             *flags = *flags | (((*flags >> 1) & 1) ^ 1); 
         }
+        ok_flag = 1;
     }
      else if (bit_0 == 0 && bit_1 == 0 && bit_2 == 1 && bit_3 == 1)
     {
         //ORR (ou logique)
-         *val = val_1 | val_2;
+         valeur_reel = val_1 | val_2;
+         valeur_theorique = val_1 | val_2;
+         
+         C_flag = 0;
+         V_flag = 0;
+         ok_flag = 1;
     }
      else if (bit_0 == 1 && bit_1 == 0 && bit_2 == 1 && bit_3 == 1)
     {
         //MOV (mouve)
-        *val = val_1;
+         printf ("je suis ici \n val_1 = %8.8x \n",val_1);
+        valeur_reel = val_1;
+        valeur_theorique = val_1;
+        
+        C_flag = 0;
+        V_flag = 0;
+        ok_flag = 1;
     }
      else if (bit_0 == 0 && bit_1 == 1 && bit_2 == 1 && bit_3 == 1)
     {
         //BIC (bit claire ...
-         *val = val_1 & ~(val_2);
+         valeur_reel = val_1 & ~(val_2);
+         valeur_theorique = val_1 & ~(val_2);
+         
+        C_flag = 0;
+        V_flag = 0;
+        ok_flag = 1;
     }
      else if (bit_0 == 1 && bit_1 == 1 && bit_2 == 1 && bit_3 == 1)
     {
         //MVN (mouve not)
-        *val = ~val_1;
+        valeur_reel = ~val_1;
+        valeur_theorique = ~val_2;
+        
+        C_flag = 0;
+        V_flag = 0;
+        ok_flag = 1;
     }
     
+    if (ok_flag == 0)
+    {
+        C_flag = 0;
+        Z_flag = 0;
+        N_flag = 0;
+
+        if (valeur_reel != valeur_theorique)
+        {
+            C_flag = 1;
+        }
+        if (valeur_reel == 0)
+        {
+            Z_flag = 1;
+        }
+        if (((valeur_reel >> 31) &1) == 1)
+        {
+           N_flag = 1;
+        }
+        
+        *flags = 0;
+        *flags = *flags | V_flag;
+        *flags = *flags | (C_flag << 1);
+        *flags = *flags | (Z_flag << 1);
+        *flags = *flags | (N_flag << 1);
+    }
+    *val = valeur_reel;
     
     return 0;
 }

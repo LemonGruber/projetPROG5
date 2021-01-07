@@ -47,8 +47,9 @@ int arm_data_processing_shift(arm_core p, uint32_t ins);
  * @return retourne 0 si tout va bien 1 si non
  * @brief effectue les calculs lorsque les data sont en valeur imediate
  */
-int arm_data_processing_immediate_msr(arm_core p, uint32_t ins);
+int arm_data_processing_immediate(arm_core p, uint32_t ins);
 
+int arm_data_processing_immediate_msr(arm_core p, uint32_t ins);
 /**
  * @param val_1 la premier valeur (a utiliser par defaut si il y a pas de 2nd valeur)
  * @param val_2 la deuxieme valeur (0 si il n'y a pas d'autre valeurs)
@@ -58,6 +59,6 @@ int arm_data_processing_immediate_msr(arm_core p, uint32_t ins);
  * @return retourne 0 si tout vas bien 1 si non
  * @brief calcul entre 2 valeurs la valeur de sortie et/ou les flags
  */
-int opcode (uint32_t val_1, uint32_t val_2, uint8_t op,uint32_t *val, uint8_t *flag);
+int opcode (arm_core p,uint32_t val_1, uint32_t val_2, uint8_t op,uint32_t *val, uint8_t *flag);
 
 #endif
