@@ -17,4 +17,3 @@ aclocal.m4
 send_irq
 memory_test
 gdb_commands
-arm_simulator

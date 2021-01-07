@@ -83,7 +83,7 @@ static int arm_execute_instruction(arm_core p) {
                             break;
                         case 1: // A vérifier !!! Possiblement mauvaise fonction
                             // Multiplies Extra load/stores
-                            result = arm_load_store(p,ins);
+                            result = arm_multiplie_extra(p,ins);
                             break;
                     }
                     break;
@@ -99,6 +99,7 @@ static int arm_execute_instruction(arm_core p) {
                         break;
                     case 1:
                         // Move immeditate to status register
+                        // #TODO créer la fonction ?
                         break;
                 }
             }
@@ -122,11 +123,13 @@ static int arm_execute_instruction(arm_core p) {
                     if (bit_20 == 1 && bit_21 == 1 && bit_22 == 1 && bit_23 == 1 && bit_24 == 1 && bit_5 == 1 && bit_6 == 1 && bit_7 == 1)
                     {
                         // Architecture undefined
+                        // #TODO bonus
                         result = 1;
                     }
                     else
                     {
                         // Media instruction
+                        // #TODO question au prof
                     }
                 break;
             }
@@ -149,10 +152,11 @@ static int arm_execute_instruction(arm_core p) {
                     switch (bit_4){
                         case 0:
                             // Coprocessor data processing
-                            result = arm_coprocessor_others_swi(p, ins);
+                            result = arm_data_processing_immediate_msr(p, ins);
                             break;
                         case 1:
                             // Coprocessor register transfer
+                            // #TODO a vérifier
                             result = arm_coprocessor_others_swi(p, ins);
                             break;
                     }
