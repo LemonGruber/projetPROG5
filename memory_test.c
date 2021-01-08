@@ -66,9 +66,10 @@ int compare_with_sim(void *a, memory m, size_t size, int reverse) {
         j_step = 1;
     }
     
+    
     for (i=0; i<size; i++, j+=j_step) {
+        
         memory_read_byte(m, j, &value);
-        //printf("\n %d, != %d \n",*((uint8_t *) a + i),(value));
         if (*((uint8_t *) a + i) != value)
             return 0;
     }
