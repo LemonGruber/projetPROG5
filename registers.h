@@ -127,4 +127,79 @@ void write_cpsr(registers r, uint32_t value);
  */
 void write_spsr(registers r, uint32_t value);
 
+/**
+ * @param r un registre de la forme registers
+ * @param reg numéros du registre
+ * @brief lit le registre demande dans le mode actuelle
+ */
+uint32_t acces_lecture_registre_SVC(registers r, uint8_t reg);
+
+/**
+ * @param r un registre de la forme registers
+ * @param reg numéros du registre
+ * @brief lit le registre demande dans le mode actuelle
+ */
+uint32_t acces_lecture_registre_ABT(registers r, uint8_t reg);
+
+/**
+ * @param r un registre de la forme registers
+ * @param reg numéros du registre
+ * @brief lit le registre demande dans le mode actuelle
+ */
+uint32_t acces_lecture_registre_UND(registers r, uint8_t reg);
+
+/**
+ * @param r un registre de la forme registers
+ * @param reg numéros du registre
+ * @brief lit le registre demande dans le mode actuelle
+ */
+uint32_t acces_lecture_registre_IRQ(registers r, uint8_t reg);
+
+/**
+ * @param r un registre de la forme registers
+ * @param reg numéros du registre
+ * @brief lit le registre demande dans le mode actuelle
+ */
+uint32_t acces_lecture_registre_FIQ(registers r, uint8_t reg);
+
+/**
+ * @param r un registre de la forme registers
+ * @param reg numéros du registre
+ * @param value valeur a ecrire dans le registre
+ * @brief ecrit la valeur dans le registre demande dans le mode actuelle
+ */
+void acces_ecriture_registre_FIQ(registers r, uint8_t reg, uint32_t value);
+
+/**
+ * @param r un registre de la forme registers
+ * @param reg numéros du registre
+ * @param value valeur a ecrire dans le registre
+ * @brief ecrit la valeur dans le registre demande dans le mode actuelle
+ */
+void acces_ecriture_registre_IRQ(registers r, uint8_t reg, uint32_t value);
+
+/**
+ * @param r un registre de la forme registers
+ * @param reg numéros du registre
+ * @param value valeur a ecrire dans le registre
+ * @brief ecrit la valeur dans le registre demande dans le mode actuelle
+ */
+void acces_ecriture_registre_UND(registers r, uint8_t reg, uint32_t value);
+
+/**
+ * @param r un registre de la forme registers
+ * @param reg numéros du registre
+ * @param value valeur a ecrire dans le registre
+ * @brief ecrit la valeur dans le registre demande dans le mode actuelle
+ */
+void acces_ecriture_registre_ABT(registers r, uint8_t reg, uint32_t value);
+
+/**
+ * @param r un registre de la forme registers
+ * @param reg numéros du registre
+ * @param value valeur a ecrire dans le registre
+ * @brief ecrit la valeur dans le registre demande dans le mode actuelle
+ */
+void acces_ecriture_registre_SVC(registers r, uint8_t reg, uint32_t value);
+
 #endif
