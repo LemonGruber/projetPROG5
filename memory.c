@@ -58,43 +58,30 @@ void memory_destroy(memory mem) {
 int memory_read_byte(memory mem, uint32_t address, uint8_t *value) {
 
     uint32_t buff;
-    if (mem->is_big_endian)
+    int decalage = 0;
+
+    switch (address % 4)
     {
-        switch (address % 4)
-        {
-            case 0 :
-                acces_mem_address (mem,address,&buff,24,LSR);
-            break;
-            case 3 :
-                acces_mem_address (mem,address,&buff,0,LSR);
-            break;
-            case 2 :
-                acces_mem_address (mem,address,&buff,8,LSR);
-            break;
-            case 1 : 
-                acces_mem_address (mem,address,&buff,16,LSR);
-            break;
-        }
+        case 0 :
+            decalage = 24;
+        break;
+        case 3 :
+            decalage = 0;
+        break;
+        case 2 :
+            decalage = 8;
+        break;
+        case 1 : 
+            decalage = 16;
+        break;
     }
-    else
+    if (!mem->is_big_endian)
     {
-        switch (address % 4)
-        {
-            case 0 :
-                acces_mem_address (mem,address,&buff,0,LSR);
-            break;
-            case 3 :
-                acces_mem_address (mem,address,&buff,24,LSR);
-            break;
-            case 2 :
-                acces_mem_address (mem,address,&buff,16,LSR);
-            break;
-            case 1 : 
-                acces_mem_address (mem,address,&buff,8,LSR);
-            break;
-        }
+        decalage = 24 - decalage;
     }
-    *value = buff; ;           
+        acces_mem_address (mem,address,&buff,decalage,LSR);
+    
+    *value = buff;           
     return 0;
 }
 
@@ -103,33 +90,29 @@ int memory_read_half(memory mem, uint32_t address, uint16_t *value) {
     
     uint32_t buff;
     int retour = 0;
-    if (!mem->is_big_endian)
+    
+    uint32_t mask;
+    int decalage;
+    
+     if (address%4 == 0)
     {
-        if (address%4 == 0)
-        {
-            acces_mem_address (mem,address,&buff,16,LSL);
-            *value = buff >> 16;
-        }
-        else if (address %4 == 2)
-        {
-            acces_mem_address (mem,address,&buff,16,LSR);
-            *value = buff;
-        }
+        decalage = 0;
+        mask = 16;
     }
-    else
+    else if (address %4 == 2)
     {
-        if ( address % 4 == 0)
-        {
-            acces_mem_address (mem,address,&buff,16,LSR);
-            *value = buff;
-        }
-        else if (address % 4 == 2)
-        {
-            acces_mem_address (mem,address,&buff,16,LSL);
-            *value = buff >> 16; 
-        }
+        decalage = 16;
+        mask = 0;
+    }
+    if(mem->is_big_endian)
+    {
+        decalage = 16 - decalage;
     }
         
+    acces_mem_address (mem,address,&buff,decalage,LSR);
+    buff = buff & ~(0xFFFF << mask);
+    *value = buff;
+   
     return retour;
 }
 
@@ -141,98 +124,61 @@ int memory_read_word(memory mem, uint32_t address, uint32_t *value) {
     
 }
 
-
-
 int memory_write_byte(memory mem, uint32_t address, uint8_t value) {
     uint32_t buff;
-    if (!mem->is_big_endian)
+    
+    int decalage;
+    switch (address % 4)
     {
-        switch (address % 4)
-        {
-            case 0:
-                buff = value;
-                appliquer_mask (mem,~(0xff),address);
-                ecriture_mem_address (mem,address,buff);
-            break;
-            case 3 :
-                buff = value;
-                appliquer_mask (mem,~(0xff << 24),address);
-                ecriture_mem_address (mem,address,buff << 24);
-            break;
-            case 1 :
-                buff = value;
-                appliquer_mask (mem,~(0xff<<8),address);
-                ecriture_mem_address (mem,address,buff << 8);
-            break;
-            case 2 :
-                buff = value;
-                appliquer_mask (mem,~(0xff<<16),address);
-                ecriture_mem_address (mem,address,buff << 16);
-            break;
-        }
+        case 0:
+            decalage = 0;  
+        break;
+        case 3 :
+            decalage = 24;  
+        break;
+        case 1 :
+            decalage = 8;  
+        break;
+        case 2 :
+            decalage = 16;
+        break;
     }
-    else
+    if (mem->is_big_endian)
     {
-        switch (address % 4)
-        {
-            case 0 :
-                buff = value;
-                appliquer_mask (mem,~(0xff<<24),address);
-                ecriture_mem_address (mem,address,buff << 24);
-            break;
-            case 3 :
-                buff = value;
-                appliquer_mask (mem,~(0xff),address);
-                ecriture_mem_address (mem,address,buff);
-            break;
-            case 1 :
-                buff = value;
-                appliquer_mask (mem,~(0xff<<16),address);
-                ecriture_mem_address (mem,address,buff << 16);
-            break;
-            case 2 :
-                buff = value;
-                appliquer_mask (mem,~(0xff<<8),address);
-                ecriture_mem_address (mem,address,buff << 8);
-            break;
-        }
+        decalage = 24-decalage;
     }
+ 
+    buff = value;
+    appliquer_mask (mem,~(0xff << decalage),address);
+    ecriture_mem_address (mem,address,buff << decalage);
+    
     return 0;
 }
 
 int memory_write_half(memory mem, uint32_t address, uint16_t value) {
     
     uint32_t buff;
-    if (mem->is_big_endian)
+    
+    int decalage;
+    
+  
+    if (address  % 4 == 0)
     {
-        if (address  % 4 == 0)
-        {
-            buff = value;
-            appliquer_mask (mem,~(0xFFFF<<16),address);
-            ecriture_mem_address (mem,address,buff << 16);
-        }
-        else if (address % 4 == 2)
-        {
-            buff = value;
-            appliquer_mask (mem,~(0xFFFF),address);
-            ecriture_mem_address (mem,address,buff);
-        }
+        decalage = 16;
     }
-    else
+    else if (address % 4 == 2)
     {
-        if (address % 4 == 0)
-        {
-            buff = value;
-            appliquer_mask (mem,~(0xFFFF),address);
-            ecriture_mem_address (mem,address,buff);
-        }
-        else if (address % 4 == 2)
-        {
-            buff = value;
-            appliquer_mask (mem,~(0xFFFF << 16),address);
-            ecriture_mem_address (mem,address,buff << 16);
-        }
+        decalage = 0;
     }
+    if (!mem->is_big_endian)
+    {
+        decalage = 16 - decalage; 
+    }
+    
+    buff = value;
+    appliquer_mask (mem,~(0xFFFF<<decalage),address);
+    ecriture_mem_address (mem,address,buff << decalage);
+   
     return 0;
 }
 
@@ -242,7 +188,6 @@ int memory_write_word(memory mem, uint32_t address, uint32_t value) {
     ecriture_mem_address (mem,address,value);
     return retour;
 }
-
 
 void afficher_memoire(memory m)
 {
@@ -272,7 +217,20 @@ void acces_mem_address (memory m,uint32_t address, uint32_t *retour,int deccalag
 
 void ecriture_mem_address (memory m, uint32_t address, uint32_t value)
 {
-    m->data[(address * 8)/32] =  m->data[(address * 8)/32] | value;
+    int retour;
+    if (address *8 < memory_get_size(m))
+    {
+        m->data[(address * 8)/32] =  m->data[(address * 8)/32] | value;
+        retour = 0;
+    }
+    else 
+    {
+       retour = 1;
+    }
+    if (retour)
+    {
+        printf("ok");
+    }
 }
 
 void appliquer_mask (memory m, uint32_t mask, uint32_t address)
