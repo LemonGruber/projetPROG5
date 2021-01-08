@@ -27,6 +27,9 @@ Contact: Guillaume.Huard@imag.fr
 
 #include <stdlib.h>
 #include <stdio.h>
+
+typedef enum {LSL, LSR} type_shift; 
+typedef enum {OR, AND} logique; 
 /**
  * @file memory.h
  * @author Guillame, Vincent
@@ -117,6 +120,20 @@ int memory_write_half(memory mem, uint32_t address, uint16_t value);
  */
 int memory_write_word(memory mem, uint32_t address, uint32_t value);
 
-
+/**
+ * @param m la memoire sous forme de structure memory
+ * @brief fonction qui peremet d'afficher la memoire (debug)
+ */
 void afficher_memoire(memory m);
+
+/**
+ * @param m la memoire sous forme de structure memory
+ * @param address l'addresse de la memoire pour laquelle on veux acceder
+ * @param retour
+ * @param deccalage
+ * @param LS
+ */
+void acces_mem_address (memory m,uint32_t address, uint32_t *retour,int deccalage, type_shift LS);
+void ecriture_mem_address (memory m, uint32_t address, uint32_t value);
+void appliquer_mask (memory m, uint32_t mask, uint32_t address);
 #endif

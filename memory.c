@@ -57,84 +57,88 @@ void memory_destroy(memory mem) {
 
 int memory_read_byte(memory mem, uint32_t address, uint8_t *value) {
 
+    uint32_t buff;
     if (mem->is_big_endian)
     {
-        if (address %4   == 0)
+        switch (address % 4)
         {
-            *value = mem->data[(address*8) /32] >> 24;
-        }
-        else if (address % 4 == 3)
-        {
-            *value = mem->data[(address*8) /32] >> 0;
-        }
-        else if (address % 4 == 2)
-        {
-            *value = (mem->data[(address*8) /32]) >> 8;
-        }
-        else if (address % 4 == 1)
-        {
-            *value = mem->data[(address*8) /32] >> 16;
+            case 0 :
+                acces_mem_address (mem,address,&buff,24,LSR);
+            break;
+            case 3 :
+                acces_mem_address (mem,address,&buff,0,LSR);
+            break;
+            case 2 :
+                acces_mem_address (mem,address,&buff,8,LSR);
+            break;
+            case 1 : 
+                acces_mem_address (mem,address,&buff,16,LSR);
+            break;
         }
     }
     else
     {
-        if (address % 4 == 0)
+        switch (address % 4)
         {
-            *value = mem->data[(address*8) /32] >> 0;
-        }
-        else if (address % 4 == 3)
-        {
-            *value = (mem->data[(address*8) /32]) >> 24;
-        }
-        else if (address % 4 == 2)
-        {
-            *value = mem->data[(address*8) /32] >> 16;
-        }
-        else if (address % 4 == 1)
-        {
-            *value = mem->data[(address*8) /32] >> 8;
+            case 0 :
+                acces_mem_address (mem,address,&buff,0,LSR);
+            break;
+            case 3 :
+                acces_mem_address (mem,address,&buff,24,LSR);
+            break;
+            case 2 :
+                acces_mem_address (mem,address,&buff,16,LSR);
+            break;
+            case 1 : 
+                acces_mem_address (mem,address,&buff,8,LSR);
+            break;
         }
     }
-            
-        
+    *value = buff; ;           
     return 0;
 }
 
 int memory_read_half(memory mem, uint32_t address, uint16_t *value) {
     *value = 0;
+    
+    uint32_t buff;
     int retour = 0;
     if (!mem->is_big_endian)
     {
         if (address%4 == 0)
         {
-            *value = (mem->data[(address*8)/32] << 16) >> 16;
+            acces_mem_address (mem,address,&buff,16,LSL);
+            *value = buff >> 16;
         }
         else if (address %4 == 2)
         {
-            *value = (mem->data[(address*8)/32] >> 16);
+            acces_mem_address (mem,address,&buff,16,LSR);
+            *value = buff;
         }
     }
     else
     {
         if ( address % 4 == 0)
         {
-            *value = (mem->data[(address*8)/32] >> 16);
+            acces_mem_address (mem,address,&buff,16,LSR);
+            *value = buff;
         }
         else if (address % 4 == 2)
         {
-            *value = (mem->data[(address*8)/32] << 16) >> 16;
+            acces_mem_address (mem,address,&buff,16,LSL);
+            *value = buff >> 16; 
         }
     }
         
-    
     return retour;
 }
 
 int memory_read_word(memory mem, uint32_t address, uint32_t *value) {
     *value = 0;
     int retour = 0;
-    *value = mem->data[(address*8)/32];
+    acces_mem_address (mem,address,value,0,LSL);
     return retour;
+    
 }
 
 
@@ -143,71 +147,56 @@ int memory_write_byte(memory mem, uint32_t address, uint8_t value) {
     uint32_t buff;
     if (!mem->is_big_endian)
     {
-        if (address == 0)
+        switch (address % 4)
         {
-            buff = value;
-            mem->data[(address*8)/32] = mem->data[(address*8)/32] & ~(0xff);
-            mem->data[(address*8)/32] = mem->data[(address*8)/32] | (buff);
-        }
-        else if (address % 4 == 3)
-        {
-            buff = value;
-            mem->data[(address*8)/32] = mem->data[(address*8)/32] & ~(0xff << 24);
-            mem->data[(address*8)/32] = mem->data[(address*8)/32] | (buff << 24);
-        }
-        else if (address % 4 == 0)
-        { 
-            buff = value;
-            mem->data[(address*8)/32] = mem->data[(address*8)/32] & ~(0xff);
-            mem->data[(address*8)/32] = mem->data[(address*8)/32] | (buff);
-        }
-        else if(address % 4 == 1)
-        {
-            buff = value;
-            mem->data[(address*8)/32] = mem->data[(address*8)/32] & ~(0xff << 8);
-            mem->data[(address*8)/32] = mem->data[(address*8)/32] | (buff << 8);
-        }
-        else if(address % 4 == 2)
-        {
-            buff = value;
-            mem->data[(address*8)/32] = mem->data[(address*8)/32] & ~(0xff << 16);
-            mem->data[(address*8)/32] = mem->data[(address*8)/32] | (buff << 16);
+            case 0:
+                buff = value;
+                appliquer_mask (mem,~(0xff),address);
+                ecriture_mem_address (mem,address,buff);
+            break;
+            case 3 :
+                buff = value;
+                appliquer_mask (mem,~(0xff << 24),address);
+                ecriture_mem_address (mem,address,buff << 24);
+            break;
+            case 1 :
+                buff = value;
+                appliquer_mask (mem,~(0xff<<8),address);
+                ecriture_mem_address (mem,address,buff << 8);
+            break;
+            case 2 :
+                buff = value;
+                appliquer_mask (mem,~(0xff<<16),address);
+                ecriture_mem_address (mem,address,buff << 16);
+            break;
         }
     }
     else
     {
-        if (address == 0)
+        switch (address % 4)
         {
-            buff = value;
-            mem->data[(address*8)/32] = mem->data[(address*8)/32] & ~(0xff << 24);
-            mem->data[(address*8)/32] = mem->data[(address*8)/32] | (buff << 24);
-        }
-        else if (address % 4 == 3)
-        {
-            buff = value;
-            mem->data[(address*8)/32] = mem->data[(address*8)/32] & ~(0xff);
-            mem->data[(address*8)/32] = mem->data[(address*8)/32] | (buff);
-        }
-        else if (address % 4 == 0)
-        { 
-            buff = value;
-            mem->data[(address*8)/32] = mem->data[(address*8)/32] & ~(0xff << 24);
-            mem->data[(address*8)/32] = mem->data[(address*8)/32] | (buff << 24);
-        }
-        else if(address % 4 == 1)
-        {
-            buff = value;
-            mem->data[(address*8)/32] = mem->data[(address*8)/32] & ~(0xff << 16);
-            mem->data[(address*8)/32] = mem->data[(address*8)/32] | (buff << 16);
-        }
-        else if(address % 4 == 2)
-        {
-            buff = value;
-            mem->data[(address*8)/32] = mem->data[(address*8)/32] & ~(0xff << 8);
-            mem->data[(address*8)/32] = mem->data[(address*8)/32] | (buff << 8);
+            case 0 :
+                buff = value;
+                appliquer_mask (mem,~(0xff<<24),address);
+                ecriture_mem_address (mem,address,buff << 24);
+            break;
+            case 3 :
+                buff = value;
+                appliquer_mask (mem,~(0xff),address);
+                ecriture_mem_address (mem,address,buff);
+            break;
+            case 1 :
+                buff = value;
+                appliquer_mask (mem,~(0xff<<16),address);
+                ecriture_mem_address (mem,address,buff << 16);
+            break;
+            case 2 :
+                buff = value;
+                appliquer_mask (mem,~(0xff<<8),address);
+                ecriture_mem_address (mem,address,buff << 8);
+            break;
         }
     }
-    
     return 0;
 }
 
@@ -216,43 +205,41 @@ int memory_write_half(memory mem, uint32_t address, uint16_t value) {
     uint32_t buff;
     if (mem->is_big_endian)
     {
-        if (address % 4 == 0)
+        if (address  % 4 == 0)
         {
             buff = value;
-            buff = buff << 16;
-            mem->data[(address * 8)/32] = buff | (mem->data[(address * 8)/32] & ~(1 << 16));
-        }
-        else if (address  % 4 == 0)
-        {
-            buff = value;
-            buff = buff << 16;
-            mem->data[(address * 8)/32] = buff | (mem->data[(address * 8)/32] & ~(1 << 16));
+            appliquer_mask (mem,~(0xFFFF<<16),address);
+            ecriture_mem_address (mem,address,buff << 16);
         }
         else if (address % 4 == 2)
         {
-            mem->data[(address * 8)/32] = value | (mem->data[(address * 8)/32] & 0x00);
+            buff = value;
+            appliquer_mask (mem,~(0xFFFF),address);
+            ecriture_mem_address (mem,address,buff);
         }
     }
     else
     {
         if (address % 4 == 0)
         {
-           
-            mem->data[(address * 8)/32] = value | (mem->data[(address * 8)/32] & 0x00);
+            buff = value;
+            appliquer_mask (mem,~(0xFFFF),address);
+            ecriture_mem_address (mem,address,buff);
         }
         else if (address % 4 == 2)
         {
             buff = value;
-            buff = buff << 16;
-            mem->data[(address * 8)/32] = buff | (mem->data[(address * 8)/32] & ~(1 << 16));
+            appliquer_mask (mem,~(0xFFFF << 16),address);
+            ecriture_mem_address (mem,address,buff << 16);
         }
     }
-     return 0;
+    return 0;
 }
 
 int memory_write_word(memory mem, uint32_t address, uint32_t value) {
     int retour = 0;
-    mem->data[(address * 8)/32] = value;
+    appliquer_mask (mem,~(0xFFFFFFFF),address);
+    ecriture_mem_address (mem,address,value);
     return retour;
 }
 
@@ -269,4 +256,26 @@ void afficher_memoire(memory m)
         }
     }
     printf("\n");
+}
+
+void acces_mem_address (memory m,uint32_t address, uint32_t *retour,int deccalage, type_shift LS)
+{
+    if (LS == LSL)
+    {
+        *retour = m->data[(address * 8)/32] << deccalage;
+    }
+    else
+    {
+        *retour = m->data[(address * 8)/32] >> deccalage;
+    }
+}
+
+void ecriture_mem_address (memory m, uint32_t address, uint32_t value)
+{
+    m->data[(address * 8)/32] =  m->data[(address * 8)/32] | value;
+}
+
+void appliquer_mask (memory m, uint32_t mask, uint32_t address)
+{
+    m->data[(address * 8)/32] = m->data[(address * 8)/32] & mask;
 }
