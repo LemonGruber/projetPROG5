@@ -78,6 +78,24 @@ int arm_coprocessor_others_swi(arm_core p, uint32_t ins) {
 }
 
 int arm_miscellaneous(arm_core p, uint32_t ins) {
+    uint8_t bit_21 = get_bit(ins, 21);
+    uint8_t Rd = get_bits(ins, 15, 12);
+    uint32_t value;
+
+    if (bit_21 == 1)
+    {
+        if (get_bit(ins, 22) == 1)
+        {
+            value = arm_read_register(p, SPSR);
+            arm_write_register(p, Rd, value);
+        }
+        else
+        {
+            value = arm_read_register(p, CPSR);
+            arm_write_register(p, Rd, value);
+        }
+        return value;
+    }
     return UNDEFINED_INSTRUCTION;
 }
 
