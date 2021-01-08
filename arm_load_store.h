@@ -55,7 +55,14 @@ int arm_load_store_multiple(arm_core p, uint32_t ins);
  */
 int arm_coprocessor_load_store(arm_core p, uint32_t ins);
 
-
+/**
+ * @param les differents parametre utile pour la memoire sous forme de structure arm_core
+ * @param adresse adresse a la quelle acceder dans la memoire
+ * @param Rd registre a utiliser pour l'opération en cours
+ * @param L bit L de l'instruction
+ * @param B bit B de l'instruction
+ * @return Fait le load ou le store sans rien regarder d'autre (factorisation du code)
+ */
 void write_load_reg_mem(arm_core p, int adresse, int Rd, int L, int B);
 
 #endif
