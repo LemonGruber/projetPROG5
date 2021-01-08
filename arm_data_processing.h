@@ -26,8 +26,8 @@ Contact: Guillaume.Huard@imag.fr
 
 /**
  * @file arm_data_processing.h
- * @author G.Huard, Vincent, Leandre, Yann
- * @date 06/01/2020
+ * @author G.Huard, Vincent, Leandre, Yann, Damien
+ * @date 07/01/2020
  * @brief gere les cacules sur les donnees
  */
 #include <stdint.h>
@@ -59,6 +59,17 @@ int arm_data_processing_immediate_msr(arm_core p, uint32_t ins);
  * @return retourne 0 si tout vas bien 1 si non
  * @brief calcul entre 2 valeurs la valeur de sortie et/ou les flags
  */
-int opcode (arm_core p,uint32_t val_1, uint32_t val_2, uint8_t op,uint32_t *val, uint8_t *flag);
+int opcode (arm_core p,uint32_t val_1, uint32_t val_2, uint32_t ins,uint32_t *val, uint8_t *flag);
+
+
+void verif_zero (uint32_t val,uint8_t *Z_flag);
+
+void different (uint32_t val_1, int val_2, uint8_t *C_flag);
+
+void negatif (uint32_t val, uint8_t *N_flag);
+
+void v_flag_add (uint32_t valeur_reel, uint32_t val_1, uint32_t val_2, uint8_t *V_flag, uint8_t C_flag);
+
+void v_flag_sub (uint32_t valeur_reel, uint32_t val_1, uint32_t val_2,uint8_t *V_flag, uint8_t C_flag);
 
 #endif
