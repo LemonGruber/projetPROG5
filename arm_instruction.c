@@ -30,13 +30,6 @@ static int arm_execute_instruction(arm_core p) {
     int result;
     
     result = arm_fetch( p, &ins);
-    /*  uint8_t bit_31 = (ins >> 31) & 1;
-    uint8_t bit_30 = (ins >> 30) & 1;
-    uint8_t bit_29 = (ins >> 29) & 1;
-    uint8_t bit_28 = (ins >> 28) & 1;
-    uint8_t bit_27 = (ins >> 27) & 1;
-    uint8_t bit_26 = (ins >> 26) & 1;
-    uint8_t bit_25 = (ins >> 25) & 1;*/
     uint8_t bit_24 = (ins >> 24) & 1;
     uint8_t bit_23 = (ins >> 23) & 1;
     uint8_t bit_22 = (ins >> 22) & 1;

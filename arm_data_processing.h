@@ -61,15 +61,46 @@ int arm_data_processing_immediate_msr(arm_core p, uint32_t ins);
  */
 int opcode (arm_core p,uint32_t val_1, uint32_t val_2, uint32_t ins,uint32_t *val, uint8_t *flag);
 
-
+/**
+ * @param val une valeur a tester en uint32_t
+ * @param Z_flag revoie le flag calculer en uint8_t
+ * @brief verifie si la valeur passer en argument est a zero 
+ */
 void verif_zero (uint32_t val,uint8_t *Z_flag);
 
+/**
+ * @param val_1 valeur calculer reel de type uint32_t
+ * @param val_2 valeur calculer a trouver de type int
+ * @param C_flag renvoie le flag calculer en uint8_t
+ * @brief permet de veirifer si la valeur reel et la valeur a trouver son differents ou non 
+ */
 void different (uint32_t val_1, int val_2, uint8_t *C_flag);
 
+/**
+ * @param val valeur a verifier de type uint32_t
+ * @param N_flag renvoie le flag calculer en uint8_t
+ * @brief verifier si la valeur est negative ou non
+ */
 void negatif (uint32_t val, uint8_t *N_flag);
 
+/**
+ * @param valeur_reel la valeur reel cacluler en uint32_t
+ * @param val_1 la 1er operande de type uint32_t
+ * @param val_2 la 2nd operande de type uint32_t
+ * @param V_flag le flag calculer de type uint8_t
+ * @param C_flag le carry deja calculer avant l'appel de la fonction de type uint8_t
+ * @brief permet de calculer le flag V pour une addition
+ */
 void v_flag_add (uint32_t valeur_reel, uint32_t val_1, uint32_t val_2, uint8_t *V_flag, uint8_t C_flag);
 
+/**
+ * @param valeur_reel la valeur reel cacluler en uint32_t
+ * @param val_1 la 1er operande de type uint32_t
+ * @param val_2 la 2nd operande de type uint32_t
+ * @param V_flag le flag calculer de type uint8_t
+ * @param C_flag le carry deja calculer avant l'appel de la fonction de type uint8_t
+ * @brief permet de calculer le flag V pour une soustraction
+ */
 void v_flag_sub (uint32_t valeur_reel, uint32_t val_1, uint32_t val_2,uint8_t *V_flag, uint8_t C_flag);
 
 #endif

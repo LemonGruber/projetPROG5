@@ -50,7 +50,7 @@ int arm_load_store(arm_core p, uint32_t ins) {
         L = (ins >> 20) & 1;
         I = (ins >> 22) & 1;
 
-        if (I == 1)
+        if (I == 1) // type de offset
         {
             offset_8 = ((ins >> 8) << 4) | (ins & 0b1111);
         }
@@ -67,11 +67,11 @@ int arm_load_store(arm_core p, uint32_t ins) {
             }
         }
         
-        if (U == 1)
+        if (U == 1) // operation +
         {
             adresse = arm_read_register(p, Rn) + offset_8;
         }
-        else
+        else        // operation -
         {
             adresse = arm_read_register(p, Rn) - offset_8;
         }
@@ -90,14 +90,10 @@ int arm_load_store(arm_core p, uint32_t ins) {
                 arm_write_register(p, Rn, adresse);
             }
         }
-        else if(L == 0 && S == 1 && H == 0 )
+        else if(L == 0 && S == 1)
         {
-            //load double
-            // Non pris en compte. #TODO
-        }
-        else if (L == 0 && S == 1 && H == 1)
-        {
-            //store double
+            // load double
+            // store double
             // Non pris en compte. #TODO
         }
         else if (L == 1 && S == 0 && H == 1)
@@ -144,12 +140,12 @@ int arm_load_store(arm_core p, uint32_t ins) {
         }
         else
         {
-            //couille
+            // On aurait pas du être ici
         }
        
         if (P == 1)
         {
-            if (W == 1)
+            if (W == 1) // Mise à jour des registres
             {
                 arm_write_register(p, Rn, adresse);
             }
@@ -226,11 +222,11 @@ int arm_load_store(arm_core p, uint32_t ins) {
             index = ins & 0xFFF;
         }
 
-        if (U == 1)
+        if (U == 1) // operation +
         {
             adresse = arm_read_register(p, Rn) + index;
         }
-        else
+        else        // operation -
         {
             adresse = arm_read_register(p, Rn) - index;
         }
@@ -316,10 +312,9 @@ void write_load_reg_mem(arm_core p, int adresse, int Rd, int L, int B){
             case 0: //Load word
                 arm_read_word(p, adresse, &value_word);
                 arm_write_register(p, Rd, value_word);
-                
                 break;
             case 1: // Load unsigned byte
-                arm_read_byte(p, adresse, &value_byte);  //ICI prbleme
+                arm_read_byte(p, adresse, &value_byte);
                 arm_write_register(p, Rd, value_byte);
         }
         break;

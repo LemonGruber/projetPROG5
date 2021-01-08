@@ -21,7 +21,7 @@ Contact: Guillaume.Huard@imag.fr
 /**
  * @file arm_load_store.h
  * @date 04/01/2021
- * @author G.Huard 
+ * @author G.Huard, Adrien, Damien
  * @brief Gere les instrcution d'acces memoire
  */
 #ifndef __ARM_LOAD_STORE_H__
@@ -32,14 +32,16 @@ Contact: Guillaume.Huard@imag.fr
 /**
  * @param p les differents parametre utile pour la memoire sous forme de structure arm_core
  * @param ins l'instrcution en bits sur 32 bit de type uint32_t
- * @return permet de faire un load ou un store sur la memoire d'une valeur donner celon l'instruction
+ * @return renvoie 0 si le load/store a fonctionner 1 si non
+ * @brief permet de faire un load ou un store sur la memoire d'une valeur donner celon l'instruction
  */
 int arm_load_store(arm_core p, uint32_t ins);
 
 /**
  * @param p les differents parametre utile pour la memoire sous forme de structure arm_core
  * @param ins l'instrcution en bits sur 32 bit de type uint32_t
- * @return permet de faire des load et/ou des store sur la memoire d'une valeur donner celon l'instruction
+ * @return renvoie 0 si le load/store a fonctionner 1 si non
+ * @brief permet de faire des load et/ou des store sur la memoire d'une valeur donner celon l'instruction
  * soit dupliquer des valeurs
  */
 int arm_load_store_multiple(arm_core p, uint32_t ins);
@@ -47,12 +49,19 @@ int arm_load_store_multiple(arm_core p, uint32_t ins);
 /**
  * @param p les differents parametre utile pour la memoire sous forme de structure arm_core
  * @param ins l'instrcution en bits sur 32 bit de type uint32_t
- * @return 
+ * @return renvoie 0 si le load/store a fonctionner 1 si non
  * @todo trouver a quoi ca sert
  */
 int arm_coprocessor_load_store(arm_core p, uint32_t ins);
 
-
+/**
+ * @param les differents parametre utile pour la memoire sous forme de structure arm_core
+ * @param adresse adresse a la quelle acceder dans la memoire
+ * @param Rd registre a utiliser pour l'opération en cours
+ * @param L bit L de l'instruction
+ * @param B bit B de l'instruction
+ * @brief Fait le load ou le store sans rien regarder d'autre (factorisation du code)
+ */
 void write_load_reg_mem(arm_core p, int adresse, int Rd, int L, int B);
 
 #endif
