@@ -30,9 +30,9 @@ static int arm_execute_instruction(arm_core p) {
     int result;
     char condition;
 
-    result = arm_fetch( p, &ins);
-
-    result = cond_fonct(p, ins, &condition);
+    
+    result=arm_fetch(p,&ins);
+    
     uint8_t bit_24 = (ins >> 24) & 1;
     uint8_t bit_23 = (ins >> 23) & 1;
     uint8_t bit_22 = (ins >> 22) & 1;
@@ -44,8 +44,9 @@ static int arm_execute_instruction(arm_core p) {
     uint8_t bit_4 = (ins >> 4) & 1;
     uint8_t champ;
 
-
+    result = cond_fonct(p, ins, &condition);
     switch (condition){
+        
         case 0: // Condition fausse. L'instruction n'est pas executer
             break;
         case 2: // Condition special (1111), instruction special realise
@@ -84,9 +85,18 @@ static int arm_execute_instruction(arm_core p) {
                                         result = arm_data_processing_shift(p,ins);
                                     }
                                     break;
-                                case 1: // A vérifier !!! Possiblement mauvaise fonction
-                                    // Multiplies Extra load/stores
-        //                            result = arm_multiplie_extra(p,ins);
+                                case 1:
+                                     // Multiplies et  Extra load/stores
+                                    if ( bit_5 == 0 && bit_6 == 0)
+                                    {
+                                        
+                                        result = arm_load_store_multiple(p,ins);
+                                    }
+                                    else
+                                    {
+                                        arm_load_store(p,ins);
+
+                                    } 
                                     break;
                             }
                             break;
@@ -109,7 +119,7 @@ static int arm_execute_instruction(arm_core p) {
                     else
                     {
                         // Data processing immediat
-                        result = arm_data_processing_shift(p,ins);
+                        result = arm_data_processing_immediate(p,ins);
                     }
                     break;
                 case 2:
@@ -193,9 +203,9 @@ int cond_fonct (arm_core p, uint32_t ins, char *retour){
     uint8_t C_flag = (cpsr >> C) & 1; 
     uint8_t V_flag = (cpsr >> V) & 1; 
     
-    uint8_t cond = get_bits(ins, 31, 27);
-
-    switch (cond){
+    uint8_t cond = get_bits(ins, 31, 28);
+    switch (cond)
+    {
         case 0:
             //EQ
             switch (Z_flag){

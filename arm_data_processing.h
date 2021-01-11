@@ -59,7 +59,7 @@ int arm_data_processing_immediate_msr(arm_core p, uint32_t ins);
  * @return retourne 0 si tout vas bien 1 si non
  * @brief calcul entre 2 valeurs la valeur de sortie et/ou les flags
  */
-int opcode (arm_core p,uint32_t val_1, uint32_t val_2, uint32_t ins,uint32_t *val, uint8_t *flag);
+int opcode (arm_core p,uint32_t val_1, uint32_t val_2, uint32_t ins,uint32_t *val, uint8_t *flag, char *est_comparaison);
 
 /**
  * @param val une valeur a tester en uint32_t

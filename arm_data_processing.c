@@ -50,6 +50,8 @@ int arm_data_processing_shift(arm_core p, uint32_t ins) {
     
     int decalage;
     
+    char est_comparaison = 0;
+    
     uint32_t value = 0;
     uint8_t flags = 0;
     uint32_t buff_flags;
@@ -96,9 +98,12 @@ int arm_data_processing_shift(arm_core p, uint32_t ins) {
     }
     
     val_1 = arm_read_register(p,Rn);
-    opcode(p,val_2,val_1,ins,&value,&flags);
-    arm_write_register(p,Rd,value);      
+    opcode(p,val_2,val_1,ins,&value,&flags,&est_comparaison );
     
+    if (!est_comparaison)
+    {
+        arm_write_register(p,Rd,value);      
+    }
     //Si la sauvegarde est activer alors
     if (S == 1)
     {
@@ -133,6 +138,7 @@ int arm_data_processing_immediate(arm_core p, uint32_t ins) {
     uint32_t buff_flags; //*buffeurs de sauvegarde
     uint32_t buff;       //*
     
+    char est_comparaison = 0;
     //on recupere les valeurs
     value_1 = immed_8;
     value_2 = arm_read_register(p,Rn);
@@ -143,11 +149,13 @@ int arm_data_processing_immediate(arm_core p, uint32_t ins) {
     value_1 = immed_8 | value_1;        
     
     //On effectue l'operation
-    opcode(p,value_1, value_2, ins, &value_1, &flags);
+    opcode(p,value_1, value_2, ins, &value_1, &flags, &est_comparaison);
 
     //On enregistre la valeur dans le registre de sauvegarde
-    arm_write_register(p,Rd,value_1);
-    
+    if (!est_comparaison)
+    {
+        arm_write_register(p,Rd,value_1);
+    }
     //Si la sauvegarde est activer
     if (S == 1)
     {
@@ -161,7 +169,7 @@ int arm_data_processing_immediate(arm_core p, uint32_t ins) {
     return 0;
 }
 
-int opcode (arm_core p,uint32_t val_1, uint32_t val_2, uint32_t ins,uint32_t *val, uint8_t *flags)
+int opcode (arm_core p,uint32_t val_1, uint32_t val_2, uint32_t ins,uint32_t *val, uint8_t *flags, char *est_comparaison)
 {
     //on recupere l'operation
     uint32_t op = (ins >> 21) & 0xF;
@@ -263,11 +271,15 @@ int opcode (arm_core p,uint32_t val_1, uint32_t val_2, uint32_t ins,uint32_t *va
             //TST (test ...
             valeur_reel = val_1 & val_2;
             valeur_theorique = val_1_int & val_2_int;
+            
+             *est_comparaison = 1;
         break;
         case 9 :
             //TEQ (test equivalence ...
             valeur_reel = val_1 ^ val_2;
             valeur_theorique = val_1_int ^ val_2_int;
+            
+            *est_comparaison = 1;
         break;
         case 10 :
             //CMP (comparer ...
@@ -276,6 +288,8 @@ int opcode (arm_core p,uint32_t val_1, uint32_t val_2, uint32_t ins,uint32_t *va
 
             different(valeur_reel,valeur_theorique,&C_flag);
             v_flag_sub (valeur_reel,val_1,val_2,&V_flag,C_flag);
+            
+            *est_comparaison = 1;
         break;
         case 11 :
             //CMN (compare negative ...
@@ -284,6 +298,8 @@ int opcode (arm_core p,uint32_t val_1, uint32_t val_2, uint32_t ins,uint32_t *va
 
             different(valeur_reel,valeur_theorique,&C_flag);
             v_flag_add (valeur_reel,val_1,val_2,&V_flag,C_flag);
+            
+            *est_comparaison = 1;
         break;
         case 12 :
             //ORR (ou logique)

@@ -55,9 +55,7 @@ int arm_branch(arm_core p, uint32_t ins) {
         //B/BL
         if (retour == 1)
         {
-            printf("\n ecrire ici");
             val_pc = val_pc + ((immediat_signe | (0xFF << 24)) << 2);
-            printf("\n val_pc : %8.8x \n",val_pc);
             arm_write_register(p,15,val_pc);
         }
     }
