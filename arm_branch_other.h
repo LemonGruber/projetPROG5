@@ -28,7 +28,6 @@ Contact: Guillaume.Huard@imag.fr
  * @author G.Huard, Vincent, Yann
  * @date 06/01/2021
  * @brief gere les fonctions de branchement, les miscellaneous, et les coprocessor other 
- * @todo comprendre ce qu'en les miscellaneous arm_branch_other.h ligne 31
  */
 #include <stdint.h>
 #include "arm_core.h"

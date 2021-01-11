@@ -74,7 +74,7 @@ void verif_zero (uint32_t val,uint8_t *Z_flag);
  * @param C_flag renvoie le flag calculer en uint8_t
  * @brief permet de veirifer si la valeur reel et la valeur a trouver son differents ou non 
  */
-void different (uint32_t val_1, int val_2, uint8_t *C_flag);
+void different (uint32_t val_1,long int val_2, uint8_t *C_flag);
 
 /**
  * @param val valeur a verifier de type uint32_t

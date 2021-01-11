@@ -128,12 +128,27 @@ void afficher_memoire(memory m);
 
 /**
  * @param m la memoire sous forme de structure memory
- * @param address l'addresse de la memoire pour laquelle on veux acceder
- * @param retour
- * @param deccalage
- * @param LS
+ * @param address l'addresse de la memoire pour laquelle on veux acceder de type uint32_t
+ * @param retour la valeur de retour, soit la valeur a l'address memoire avec le decalage de type uint21_t
+ * @param deccalage la valeur de decalage de type int
+ * @param LS le type de decalage (a gauche ou a droite) de type type_shift
+ * @brief permet d'acceder a la valeur de la memoire a une addresse donner avec le decalage requis
  */
 void acces_mem_address (memory m,uint32_t address, uint32_t *retour,int deccalage, type_shift LS);
+
+/**
+ * @param m la memoire sous forme de structure memory
+ * @param address l'addresse de la memoire pour laquelle on veux ecrire de type uint32_t
+ * @param value la valeur que l'on veux ecrire en memoire
+ * @brief permet d'ecrire en memoire a une adresse donner
+ */
 void ecriture_mem_address (memory m, uint32_t address, uint32_t value);
+
+/**
+ * @param m la memoire sous forme de structure memory
+ * @param mask un masque de type uint32_t
+ * @param address l'adresse memoire a laquelle apliquer le masque sur sa valeur.
+ * @brief permet d'apliquer un masque a une valeur dans la memoire a une adresse donnee
+ */
 void appliquer_mask (memory m, uint32_t mask, uint32_t address);
 #endif
