@@ -35,9 +35,7 @@ int arm_branch(arm_core p, uint32_t ins) {
     
     uint32_t val_pc;
     
-    char retour;
-    
-    int ruckkehr;
+    char retour = 1;
     
     val_pc = arm_read_register(p,15);
     
@@ -55,7 +53,6 @@ int arm_branch(arm_core p, uint32_t ins) {
     else
     {
         //B/BL
-        ruckkehr = cond_fonct(p,cond,&retour);
         if (retour == 1)
         {
             printf("\n ecrire ici");
@@ -64,7 +61,7 @@ int arm_branch(arm_core p, uint32_t ins) {
             arm_write_register(p,15,val_pc);
         }
     }
-    return ruckkehr;
+    return 0;
 }
 
 int arm_coprocessor_others_swi(arm_core p, uint32_t ins) {
@@ -97,193 +94,4 @@ int arm_miscellaneous(arm_core p, uint32_t ins) {
         return value;
     }
     return UNDEFINED_INSTRUCTION;
-}
-
-int cond_fonct (arm_core p, uint8_t cond, char *retour)
-{
-    uint32_t cpsr= arm_read_cpsr(p);
-    uint8_t Z_flag = (cpsr >> Z) & 1;
-    uint8_t N_flag = (cpsr >> N) & 1; 
-    uint8_t C_flag = (cpsr >> C) & 1; 
-    uint8_t V_flag = (cpsr >> V) & 1; 
-    
-    uint8_t bit_0 = (cond >> 0) &1;
-    uint8_t bit_1 = (cond >> 1) &1;
-    uint8_t bit_2 = (cond >> 2) &1;
-    uint8_t bit_3 = (cond >> 3) &1;
-    
-    if (bit_3 == 0 && bit_2 == 0 && bit_1 == 0 && bit_0 == 0)
-    {
-        //EQ
-        if (Z_flag == 1)
-        {
-            *retour = 1;
-        }
-        else
-        {
-            *retour = 0;
-        }
-    }
-    else if (bit_3 == 0 && bit_2 == 0 && bit_1 == 0 && bit_0 == 1)
-    {
-        //NEQ
-        if (Z_flag == 1)
-        {
-            *retour = 0;
-        }
-        else
-        {
-            *retour = 1;
-        }
-    }
-    else if (bit_3 == 0 && bit_2 == 0 && bit_1 == 1 && bit_0 == 0)
-    {
-        //CS/HS
-        if (C_flag == 1)
-        {
-            *retour = 1;
-        }
-        else
-        {
-            *retour = 0;
-        }
-    }
-    else if (bit_3 == 0 && bit_2 == 0 && bit_1 == 1 && bit_0 == 1)
-    {
-        //CC/LO
-        if (C_flag == 0)
-        {
-            *retour = 1;
-        }
-        else
-        {
-            *retour = 0;
-        }
-    }
-    else if (bit_3 == 0 && bit_2 == 1 && bit_1 == 0 && bit_0 == 0)
-    {
-        //MI
-        if (N_flag == 1)
-        {
-            *retour = 1;
-        }
-        else
-        {
-            *retour = 0;
-        }
-    }
-    else if (bit_3 == 0 && bit_2 == 1 && bit_1 == 0 && bit_0 == 1)
-    {
-        //PL
-        if (N_flag == 0)
-        {
-            *retour = 1;
-        }
-        else
-        {
-            *retour = 0;
-        }
-    }
-    else if (bit_3 == 0 && bit_2 == 1 && bit_1 == 1 && bit_0 == 0)
-    {
-        //VS
-        if (V_flag == 1)
-        {
-            *retour = 1;
-        }
-        else
-        {
-            *retour = 0;
-        }
-    }
-    else if (bit_3 == 0 && bit_2 == 1 && bit_1 == 1 && bit_0 == 1)
-    {
-        //VC
-        if (V_flag == 0)
-        {
-            *retour = 1;
-        }
-        else
-        {
-            *retour = 0;
-        }
-    }
-    else if (bit_3 == 1 && bit_2 == 0 && bit_1 == 0 && bit_0 == 0)
-    {
-        //HI
-        if (C_flag == 1 && Z_flag == 0)
-        {
-            *retour = 1;
-        }
-        else
-        {
-            *retour = 0;
-        }
-    }
-    else if (bit_3 == 1 && bit_2 == 0 && bit_1 == 0 && bit_0 == 1)
-    {
-        //LS
-        if (C_flag == 0 || Z_flag == 1)
-        {
-            *retour = 1;
-        }
-        else
-        {
-            *retour = 0;
-        }
-    }
-    else if (bit_3 == 1 && bit_2 == 0 && bit_1 == 1 && bit_0 == 0)
-    {
-        //GE
-        if (N_flag == V_flag)
-        {
-            *retour = 1;
-        }
-        else
-        {
-            *retour = 0;
-        }
-    }
-    else if (bit_3 == 1 && bit_2 == 0 && bit_1 == 1 && bit_0 == 1)
-    {
-        //LT
-        if (N_flag != V_flag)
-        {
-            *retour = 1;
-        }
-        else
-        {
-            *retour = 0;
-        }
-    }
-    else if (bit_3 == 1 && bit_2 == 1 && bit_1 == 0 && bit_0 == 0)
-    {
-        //GT
-        if (Z_flag == 0 && N_flag == V_flag)
-        {
-            *retour = 1;
-        }
-        else
-        {
-            *retour = 0;
-        }
-    }
-    else if (bit_3 == 1 && bit_2 == 1 && bit_1 == 0 && bit_0 == 1)
-    {
-        //LE
-        if (Z_flag == 1 || N_flag != V_flag)
-        {
-            *retour = 1;
-        }
-        else
-        {
-            *retour = 0;
-        }
-    }
-    else if (bit_3 == 1 && bit_2 == 1 && bit_1 == 1 && bit_0 == 0)
-    {
-        *retour = 1;
-    }
-    
-    return 0;
 }

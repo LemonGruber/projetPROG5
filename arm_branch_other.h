@@ -58,13 +58,4 @@ int arm_coprocessor_others_swi(arm_core p, uint32_t ins);
 int arm_miscellaneous(arm_core p, uint32_t ins);
 
 
-/**
- * @param p les information machine sous forme de structure de arm_core
- * @param cond la contion a tester avec son opcode de type uint8_t
- * @param retour booleen de type char (0 si la condition est fausse 1 si non) de type pointeur de char
- * @return 0 si tout vas bien 1 si non de type int
- * @brief verifier si la condition est respecter ou non
- */
-int cond_fonct (arm_core p, uint8_t cond, char *retour);
-
 #endif
