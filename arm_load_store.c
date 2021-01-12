@@ -4,17 +4,14 @@ Copyright (C) 2011 Guillaume Huard
 Ce programme est libre, vous pouvez le redistribuer et/ou le modifier selon les
 termes de la Licence Publique G?n?rale GNU publi?e par la Free Software
 Foundation (version 2 ou bien toute autre version ult?rieure choisie par vous).
-
 Ce programme est distribu? car potentiellement utile, mais SANS AUCUNE
 GARANTIE, ni explicite ni implicite, y compris les garanties de
 commercialisation ou d'adaptation dans un but sp?cifique. Reportez-vous ? la
 Licence Publique G?n?rale GNU pour plus de d?tails.
-
 Vous devez avoir re?u une copie de la Licence Publique G?n?rale GNU en m?me
 temps que ce programme ; si ce n'est pas le cas, ?crivez ? la Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307,
 ?tats-Unis.
-
 Contact: Guillaume.Huard@imag.fr
 	 B?timent IMAG
 	 700 avenue centrale, domaine universitaire
@@ -359,149 +356,92 @@ int arm_load_store_multiple(arm_core p, uint32_t ins) {
     
     addr_Rn = arm_read_register(p,Rn);
     
-    if ((!P && U) || (P && U)) // 01 || 11   - increment after || increment before
+    if (!P && U) // 01 - increment after 
     {
-        if (!P && U) // 01 - increment after 
+        start_address = addr_Rn;
+        end_address = addr_Rn + (sum * 4) - 4;
+    }
+    else if (P && U)  // 11 - increment before
+    {
+        start_address = addr_Rn + 4;
+        end_address = addr_Rn + (sum * 4);
+    }
+    else if (!U && !P) // 00 - decrement after
+    {
+        start_address = addr_Rn - (sum * 4);
+        end_address = addr_Rn - 4;
+    }
+    else // 10 - decrement before
+    {
+        start_address = addr_Rn - (sum * 4) + 4;
+        end_address = addr_Rn;
+    }
+    j=0;
+    
+    if (CondValid && W)
+    {
+        if (U)  // U différencie le mode increment et decrement et donc la valeur de modification de Rn
         {
-            //printf("\n\nIl est bien arrive en 01 pour PU\n");
-            start_address = addr_Rn;
-            end_address = addr_Rn + (sum * 4) - 4;
-        }
-        else {  // 11 - increment before
-            start_address = addr_Rn + 4;
-            end_address = addr_Rn + (sum * 4);
-        }
-        j=0;
-        
-        if (CondValid && W)
-        {
-            //printf("La condition est validé et W vaut 1 alors mise a jour de R%d (Rn)\n",Rn);
             arm_write_register(p, Rn,addr_Rn + (sum*4));
         }
-        
-        while (start_address <= end_address)
+        else
         {
-         
-            //Ici bit_reg sert à savoir si le registre j fait partie des registres à charger
-            //et j est le numéro du registre   
-            
-            bit_reg = ins >> j & 1;
-            
-            //printf("bit %d : %d\n",j,bit_reg);
-            if (bit_reg) //Le registre fait partie de la liste
+            arm_write_register(p, Rn,addr_Rn - (sum*4));
+        }
+    }
+    
+    while (start_address <= end_address)
+    {
+     
+        //Ici bit_reg sert à savoir si le registre j fait partie des registres à charger
+        //et j est le numéro du registre   
+        
+        bit_reg = ins >> j & 1;
+        
+        if (bit_reg) //Le registre fait partie de la liste
+        {
+            if (L) //Load
             {
-                //printf("Le bit %d vaut 1 alors on le traite\n",j);
-                if (L) //Load
+                if (S && !PC) // Si S et PC pas dans la liste
                 {
-                    if (S && !PC) // Si S et PC pas dans la liste
+                    if (arm_in_a_privileged_mode(p)) // Si mode privilégié
                     {
-                        if (arm_in_a_privileged_mode(p)) // Si mode privilégié
-                        {
-                            Execution_Load_Usr(p, start_address, j);
-                        }
-                        else
-                        {
-                            Execution_Load(p, start_address, j);
-                        }
+                        Execution_Load_Usr(p, start_address, j);
                     }
                     else
                     {
                         Execution_Load(p, start_address, j);
                     }
                 }
-                else // Store 
+                else
                 {
-                    if (S) // Si S
+                    Execution_Load(p, start_address, j);
+                }
+            }
+            else // Store 
+            {
+                if (S) // Si S
+                {
+                    if (arm_in_a_privileged_mode(p)) // Si mode privilégié
                     {
-                        if (arm_in_a_privileged_mode(p)) // Si mode privilégié
-                        {
-                            Execution_Store_Usr(p, start_address, j);
-                        }
-                        else
-                        {
-                            Execution_Store(p, start_address, j);
-                        }
+                        Execution_Store_Usr(p, start_address, j);
                     }
                     else
                     {
                         Execution_Store(p, start_address, j);
                     }
                 }
-                
-                start_address += 4;
+                else
+                {
+                    Execution_Store(p, start_address, j);
+                }
             }
-            j++;
+            
+            start_address += 4;
         }
+        j++;
     }
-    else // 00 || 10 - decrement after || decrement before
-    {
-        j = 0;
     
-        if (!P && !U) // 00 - decrement after
-        {
-            start_address = addr_Rn - (sum * 4);
-            end_address = addr_Rn - 4;
-        }
-        else  // 10 - decrement before
-        {
-            start_address = addr_Rn - (sum * 4) + 4;
-            end_address = addr_Rn;
-        }
-        
-        
-        
-        if (CondValid && W)
-        {
-            arm_write_register(p, Rn,addr_Rn - (sum*4));
-        }
-        
-        while (start_address <= end_address)
-        {
-            bit_reg = ins >> j & 1;
-            if (bit_reg)
-            {
-                if (L) //Load
-                {
-                    if (S && !PC) // Si S et PC pas dans la liste
-                    {
-                       if (arm_in_a_privileged_mode(p)) // Si mode privilégié
-                       {
-                           Execution_Load_Usr(p, start_address, j);
-                       }
-                       else
-                       {
-                           Execution_Load(p, start_address, j);
-                       }
-                    }
-                    else
-                    {
-                        Execution_Load(p, start_address, j);
-                    }
-                }
-                else // Store 
-                {
-                    if (S) // Si S
-                    {
-                        if (arm_in_a_privileged_mode(p)) // Si mode privilégié
-                        {
-                            Execution_Store_Usr(p, start_address, j);
-                        }
-                        else
-                        {
-                            Execution_Store(p, start_address, j);
-                        }
-                   }
-                   else
-                   {
-                       Execution_Store(p, start_address, j);
-                   }
-                }
-                start_address += 4;
-            }
-            j++;
-        }
-        
-    }
     
     //Si on a L, PC chargé et S alors CPSR est chargé depuis SPSR après avoir chargé les registes
     if (L && PC && S)
