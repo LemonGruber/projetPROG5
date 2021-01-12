@@ -58,7 +58,7 @@ int arm_coprocessor_load_store(arm_core p, uint32_t ins);
 void write_load_reg_mem(arm_core p, int adresse, int Rd, int L, int B);
 
 /*
- *permet de donné le code condition et le core pour obtenir si la condition est validé
+ *permet de donnï¿½ le code condition et le core pour obtenir si la condition est validï¿½
  */
 int ConditionPassed(arm_core p, uint32_t cond);
 
@@ -68,7 +68,7 @@ int ConditionPassed(arm_core p, uint32_t cond);
 int Est_Sys_Ou_User(arm_core p);
 
 /*
- *Fonction basique permettant de stocker ou charger des données
+ *Fonction basique permettant de stocker ou charger des donnï¿½es
  */
 void Execution_Load(arm_core p, uint32_t addr, int reg);
 
@@ -77,6 +77,16 @@ void Execution_Load_Usr(arm_core p, uint32_t addr, int reg);
 void Execution_Store(arm_core p, uint32_t addr, int reg);
 
 void Execution_Store_Usr(arm_core p, uint32_t addr, int reg);
+
+/**
+ * @param les differents parametre utile pour la memoire sous forme de structure arm_core
+ * @param adresse adresse a la quelle acceder dans la memoire
+ * @param Rd registre a utiliser pour l'opÃ©ration en cours
+ * @param L bit L de l'instruction
+ * @param B bit B de l'instruction
+ * @return Fait le load ou le store sans rien regarder d'autre (factorisation du code)
+ */
+void write_load_reg_mem(arm_core p, int adresse, int Rd, int L, int B);
 
 #endif
 

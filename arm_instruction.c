@@ -176,7 +176,7 @@ static int arm_execute_instruction(arm_core p) {
                             break;
                         case 1:
                             // Software interrupt
-                            result = SOFTWARE_INTERRUPT ;
+                            result = arm_coprocessor_others_swi(p, ins);
                             break;
                     }
                     break;

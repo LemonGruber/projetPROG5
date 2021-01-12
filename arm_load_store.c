@@ -50,7 +50,7 @@ int arm_load_store(arm_core p, uint32_t ins) {
         L = (ins >> 20) & 1;
         I = (ins >> 22) & 1;
 
-        if (I == 1)
+        if (I == 1) // type de offset
         {
             offset_8 = ((ins >> 8) << 4) | (ins & 0b1111);
         }
@@ -67,11 +67,11 @@ int arm_load_store(arm_core p, uint32_t ins) {
             }
         }
         
-        if (U == 1)
+        if (U == 1) // operation +
         {
             adresse = arm_read_register(p, Rn) + offset_8;
         }
-        else
+        else        // operation -
         {
             adresse = arm_read_register(p, Rn) - offset_8;
         }
@@ -90,14 +90,10 @@ int arm_load_store(arm_core p, uint32_t ins) {
                 arm_write_register(p, Rn, adresse);
             }
         }
-        else if(L == 0 && S == 1 && H == 0 )
+        else if(L == 0 && S == 1)
         {
-            //load double
-            // Non pris en compte. #TODO
-        }
-        else if (L == 0 && S == 1 && H == 1)
-        {
-            //store double
+            // load double
+            // store double
             // Non pris en compte. #TODO
         }
         else if (L == 1 && S == 0 && H == 1)
@@ -144,12 +140,12 @@ int arm_load_store(arm_core p, uint32_t ins) {
         }
         else
         {
-            //couille
+            // On aurait pas du être ici
         }
        
         if (P == 1)
         {
-            if (W == 1)
+            if (W == 1) // Mise à jour des registres
             {
                 arm_write_register(p, Rn, adresse);
             }
@@ -226,11 +222,11 @@ int arm_load_store(arm_core p, uint32_t ins) {
             index = ins & 0xFFF;
         }
 
-        if (U == 1)
+        if (U == 1) // operation +
         {
             adresse = arm_read_register(p, Rn) + index;
         }
-        else
+        else        // operation -
         {
             adresse = arm_read_register(p, Rn) - index;
         }
@@ -239,57 +235,31 @@ int arm_load_store(arm_core p, uint32_t ins) {
         {  
             if (W == 0)
             {
-                if (L == 1)
-                {
-                    if (B == 1) // Load unsigned byte
-                    {
-                        arm_read_byte(p, arm_read_register(p, Rn), &value_byte);
-                        arm_write_register(p, Rd, value_byte);
-                    }
-                    else       //Load word
-                    {
-                        arm_read_word(p, arm_read_register(p, Rn), &value_word);
-                        arm_write_register(p, Rd, value_word);
-                    }
-                }
-                else
-                {
-                    if (B == 1) // Store unsigned byte
-                    {
-                        value_byte = arm_read_register(p, Rd);
-                        arm_write_byte(p, arm_read_register(p, Rn), value_byte);
-                    }
-                    else        // Store word
-                    {
-                        value_word = arm_read_register(p, Rd);
-                        arm_write_word(p, arm_read_register(p, Rn), value_word);
-                    }
-                }
+                write_load_reg_mem(p, arm_read_register(p, Rn), Rd, L, B);
             }
             else // W == 1
             {
                 if (L == 1)
                 {
-                    if (B == 1) //Load unsigned byte
+                    if (B == 1) //Load unsigned byte user acces
                     {
                         arm_read_byte(p, arm_read_register(p, Rn), &value_byte);
                         arm_write_usr_register(p, Rd, value_byte);
                     }
-                    else
+                    else        // Load word user acces
                     {
-                        //Load word
                         arm_read_word(p, arm_read_register(p, Rn), &value_word);
                         arm_write_usr_register(p, Rd, value_word);
                     }
                 }
                 else
                 {
-                    if (B == 1) // Store unsigned byte
+                    if (B == 1) // Store unsigned byte user acces
                     {
                         value_byte = arm_read_usr_register(p, Rd);
                         arm_write_byte(p, arm_read_register(p, Rn), value_byte);
                     }
-                    else        //Store word
+                    else        //Store word user acces
                     {
                         value_word = arm_read_usr_register(p, Rd);
                         arm_write_word(p, Rn, value_word);
@@ -304,18 +274,7 @@ int arm_load_store(arm_core p, uint32_t ins) {
             {
                 arm_write_register(p, Rn, adresse);
             }
-            if (L == 1)
-            {
-                //Load word
-                arm_read_word(p, adresse, &value_word);
-                arm_write_register(p, Rd, value_word);
-            }
-            else
-            {
-                //Store word
-                value_word = arm_read_register(p, Rd);
-                arm_write_word(p, adresse, value_word);
-            }
+            write_load_reg_mem(p, adresse, Rd, L, B);
         }
     }
     
@@ -366,7 +325,7 @@ int arm_load_store_multiple(arm_core p, uint32_t ins) {
         start_address = addr_Rn + 4;
         end_address = addr_Rn + (sum * 4);
     }
-    else if (!U && !P) // 00 - decrement after
+    else if (P && !U) // 10 - decrement after
     {
         start_address = addr_Rn - (sum * 4);
         end_address = addr_Rn - 4;
@@ -539,4 +498,35 @@ void Execution_Store_Usr(arm_core p, uint32_t addr, int reg){
     
     value = arm_read_usr_register(p,reg);
     arm_write_word(p, addr, value);
+}
+
+void write_load_reg_mem(arm_core p, int adresse, int Rd, int L, int B){
+    uint32_t value_word;
+    uint8_t value_byte;
+
+    switch (L){
+    case 0:
+        switch (B){
+            case 0: // Store word
+                value_word = arm_read_register(p, Rd);
+                arm_write_word(p, adresse, value_word);
+                break;
+            case 1: // Store unsigned byte
+                value_byte = arm_read_register(p, Rd);
+                arm_write_byte(p, adresse, value_byte);
+        }
+        break;
+    case 1:
+        switch (B){
+            case 0: //Load word
+                arm_read_word(p, adresse, &value_word);
+                arm_write_register(p, Rd, value_word);
+                break;
+            case 1: // Load unsigned byte
+                arm_read_byte(p, adresse, &value_byte);
+                arm_write_register(p, Rd, value_byte);
+                break;
+        }
+        break;
+    }
 }
