@@ -328,7 +328,7 @@ int arm_load_store_multiple(arm_core p, uint32_t ins) {
     uint32_t cond, Rn, start_address, end_address, addr_Rn;
     int sum = 0, i;
     
-    // Bit récupéré dans l'instruction
+    // Bit rÃ©cupÃ©rÃ© dans l'instruction
     P = ins >> 24 & 1;
     U = ins >> 23 & 1;
     S = ins >> 22 & 1;
@@ -345,7 +345,7 @@ int arm_load_store_multiple(arm_core p, uint32_t ins) {
         return UNDEFINED_INSTRUCTION;
     }
     
-    //vérification si la condition est passé ou non
+    //vÃ©rification si la condition est passÃ© ou non
     CondValid = ConditionPassed(p, cond);
     
     //nombre de registre de la liste
@@ -380,7 +380,7 @@ int arm_load_store_multiple(arm_core p, uint32_t ins) {
     
     if (CondValid && W)
     {
-        if (U)  // U différencie le mode increment et decrement et donc la valeur de modification de Rn
+        if (U)  // U diffÃ©rencie le mode increment et decrement et donc la valeur de modification de Rn
         {
             arm_write_register(p, Rn,addr_Rn + (sum*4));
         }
@@ -393,8 +393,8 @@ int arm_load_store_multiple(arm_core p, uint32_t ins) {
     while (start_address <= end_address)
     {
      
-        //Ici bit_reg sert à savoir si le registre j fait partie des registres à charger
-        //et j est le numéro du registre   
+        //Ici bit_reg sert Ã  savoir si le registre j fait partie des registres Ã  charger
+        //et j est le numÃ©ro du registre   
         
         bit_reg = ins >> j & 1;
         
@@ -404,7 +404,7 @@ int arm_load_store_multiple(arm_core p, uint32_t ins) {
             {
                 if (S && !PC) // Si S et PC pas dans la liste
                 {
-                    if (arm_in_a_privileged_mode(p)) // Si mode privilégié
+                    if (arm_in_a_privileged_mode(p)) // Si mode privilÃ©giÃ©
                     {
                         Execution_Load_Usr(p, start_address, j);
                     }
@@ -422,7 +422,7 @@ int arm_load_store_multiple(arm_core p, uint32_t ins) {
             {
                 if (S) // Si S
                 {
-                    if (arm_in_a_privileged_mode(p)) // Si mode privilégié
+                    if (arm_in_a_privileged_mode(p)) // Si mode privilÃ©giÃ©
                     {
                         Execution_Store_Usr(p, start_address, j);
                     }
@@ -443,7 +443,7 @@ int arm_load_store_multiple(arm_core p, uint32_t ins) {
     }
     
     
-    //Si on a L, PC chargé et S alors CPSR est chargé depuis SPSR après avoir chargé les registes
+    //Si on a L, PC chargÃ© et S alors CPSR est chargÃ© depuis SPSR aprÃ¨s avoir chargÃ© les registes
     if (L && PC && S)
     {
         arm_write_cpsr(p,arm_read_spsr(p));
@@ -540,14 +540,3 @@ void Execution_Store_Usr(arm_core p, uint32_t addr, int reg){
     value = arm_read_usr_register(p,reg);
     arm_write_word(p, addr, value);
 }
-
-
-
-
-
-
-
-
-
-
-

@@ -45,17 +45,19 @@ int arm_data_processing_shift(arm_core p, uint32_t ins);
  * @param p le systeme en structure arm_core
  * @param ins l'instruction en uint32_t
  * @return retourne 0 si tout va bien 1 si non
- * @brief effectue les calculs lorsque les data sont en valeur imediate
+ * @brief effectue les calculs lorsque les data sont en valeur immediate
  */
 int arm_data_processing_immediate(arm_core p, uint32_t ins);
+
 
 int arm_data_processing_immediate_msr(arm_core p, uint32_t ins);
 /**
  * @param val_1 la premier valeur (a utiliser par defaut si il y a pas de 2nd valeur)
  * @param val_2 la deuxieme valeur (0 si il n'y a pas d'autre valeurs)
- * @param ins instruction de en cours d'execution
+ * @param ins l'instruction de type uint32_t
  * @param val la valeur de sortie (reste par defaut si on veux que les flags)
  * @param flag les flags des sortie d'opreration si desirer (0 si non)
+ * @param est_comparaion est a 1 si il a effectuer une comparaison (TST,CMP etc..), 0 si non de type pointeur de char
  * @return retourne 0 si tout vas bien 1 si non
  * @brief calcul entre 2 valeurs la valeur de sortie et/ou les flags
  */
