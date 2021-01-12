@@ -53,7 +53,7 @@ int arm_data_processing_immediate_msr(arm_core p, uint32_t ins);
 /**
  * @param val_1 la premier valeur (a utiliser par defaut si il y a pas de 2nd valeur)
  * @param val_2 la deuxieme valeur (0 si il n'y a pas d'autre valeurs)
- * @param op le code de l'operation a evvectuer de type uint8_t
+ * @param ins instruction de en cours d'execution
  * @param val la valeur de sortie (reste par defaut si on veux que les flags)
  * @param flag les flags des sortie d'opreration si desirer (0 si non)
  * @return retourne 0 si tout vas bien 1 si non

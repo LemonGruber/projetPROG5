@@ -75,16 +75,16 @@ int arm_data_processing_shift(arm_core p, uint32_t ins) {
         case 0 :
             //LSL
             val_2 = val_2 << decalage;
-        break;
+            break;
         case 1 :
+            //LSR
+            val_2 = val_2  >> decalage;
+            break;
+        case 2 :
            //ASR
             buff = (~(1 << decalage)) << (32-decalage);
             val_2 = (val_2  >> decalage) | buff;
-        break;
-        case 2 :
-            //LSR
-            val_2 = val_2  >> decalage;
-        break;
+            break;
         case 3 :
             if (decalage == 1)
              {
@@ -156,6 +156,17 @@ int arm_data_processing_immediate(arm_core p, uint32_t ins) {
     {
         arm_write_register(p,Rd,value_1);
     }
+    /*if (S == 1 && Rd == 15){
+        if (arm_current_mode_has_spsr(p))
+        {
+            arm_write_cpsr(p, arm_read_spsr(p));
+        }
+        else
+        {
+            return UNDEFINED_INSTRUCTION; // #TODO Code erreur
+        }
+    }
+    else*/ 
     //Si la sauvegarde est activer
     if (S == 1)
     {
@@ -199,7 +210,7 @@ int opcode (arm_core p,uint32_t val_1, uint32_t val_2, uint32_t ins,uint32_t *va
     //verifier si le flag a ete deja cree
     char ok_flag  = 0;
 
-    //initilaises les flags a 0
+    //initialises les flags a 0
     *flags = 0;
     
     if (cpsr_read)
