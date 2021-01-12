@@ -1,10 +1,10 @@
 *.o
 .deps/
 autom4te.cache/
+build-aux/
 nbproject/
 Makefile
 config.log
-<<<<<<< HEAD
 config.status
 config.h
 send_irq
@@ -16,17 +16,6 @@ aclocal.m4
 send_irq
 memory_test
 gdb_commands
-=======
-arm_simulator
-config.h
-config.status
-memory_test
-send_irq
+Makefile.in
+Makefile.am
 stamp-h1
-Examples/*.o
-Examples/example1
-Examples/example2
-Examples/example3
-Examples/example4
-insertion_sort
->>>>>>> a22109d97c2aaf4a6749e3581efc9fd10ed4b978
