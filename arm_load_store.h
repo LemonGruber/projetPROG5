@@ -78,7 +78,7 @@ int Est_Sys_Ou_User(arm_core p);
  * @param p les differents parametres utiles pour la memoire sous forme de structure arm_core
  * @param addr addresse memoire utiliser de type uint32_t
  * @param reg registre pour le load de type int
- * @brief permet de faire un load pour tout les modes sauf utilisateur
+ * @brief permet de faire un load pour un word dans le mode courant
  */
 void Execution_Load(arm_core p, uint32_t addr, int reg);
 
@@ -86,15 +86,31 @@ void Execution_Load(arm_core p, uint32_t addr, int reg);
  * @param p les differents parametres utiles pour la memoire sous forme de structure arm_core
  * @param addr addresse memoire utiliser de type uint32_t
  * @param reg registre pour le load de type int
- * @brief permet de faire un load pour tout le mode utilisateur
+ * @brief permet de faire un load pour un word pour le mode utilisateur
  */
 void Execution_Load_Usr(arm_core p, uint32_t addr, int reg);
 
 /**
  * @param p les differents parametres utiles pour la memoire sous forme de structure arm_core
  * @param addr addresse memoire utiliser de type uint32_t
+ * @param reg registre pour le load de type int
+ * @brief permet de faire un load pour un byte dans le mode utilisateur
+ */
+void Execution_Load_Usr_Byte(arm_core p, uint32_t addr, int reg);
+
+/**
+ * @param p les differents parametres utiles pour la memoire sous forme de structure arm_core
+ * @param addr addresse memoire utiliser de type uint32_t
+ * @param reg registre pour le load de type int
+ * @brief permet de faire un load pour un byte dans le mode courant
+ */
+void Execution_Load_Byte(arm_core p, uint32_t addr, int reg);
+
+/**
+ * @param p les differents parametres utiles pour la memoire sous forme de structure arm_core
+ * @param addr addresse memoire utiliser de type uint32_t
  * @param reg registre pour le store de type int
- * @brief permet de faire un store pour tout les modes sauf utilisateur
+ * @brief permet de faire un store de word dans le mode courant
  */
 void Execution_Store(arm_core p, uint32_t addr, int reg);
 
@@ -102,9 +118,25 @@ void Execution_Store(arm_core p, uint32_t addr, int reg);
  * @param p les differents parametres utiles pour la memoire sous forme de structure arm_core
  * @param addr addresse memoire utiliser de type uint32_t
  * @param reg registre pour le store de type int
- * @brief permet de faire un store pour tout le mode sauf utilisateur
+ * @brief permet de faire un store de word dans le mode utilisateur
  */
 void Execution_Store_Usr(arm_core p, uint32_t addr, int reg);
+
+/**
+ * @param p les differents parametres utiles pour la memoire sous forme de structure arm_core
+ * @param addr addresse memoire utiliser de type uint32_t
+ * @param reg registre pour le store de type int
+ * @brief permet de faire un store de byte dans le mode utilisateur
+ */
+void Execution_Store_Usr_Byte(arm_core p, uint32_t addr, int reg);
+
+/**
+ * @param p les differents parametres utiles pour la memoire sous forme de structure arm_core
+ * @param addr addresse memoire utiliser de type uint32_t
+ * @param reg registre pour le store de type int
+ * @brief permet de faire un store de byte dans le mode courant
+ */
+void Execution_Store_Byte(arm_core p, uint32_t addr, int reg);
 
 /**
  * @param les differents parametre utile pour la memoire sous forme de structure arm_core
