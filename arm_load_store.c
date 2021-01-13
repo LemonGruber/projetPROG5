@@ -32,7 +32,6 @@ int arm_load_store(arm_core p, uint32_t ins) {
     int shift_imm;
     int shift;
     
-    uint32_t value_word;
     uint16_t value_half;
     uint8_t value_byte;
     uint8_t offset_8;
@@ -482,7 +481,7 @@ void Execution_Load_Usr(arm_core p, uint32_t addr, int reg){
 
 void Execution_Load_Usr_Byte(arm_core p, uint32_t addr, int reg){
     
-    uint32_t value;
+    uint8_t value;
     
     arm_read_byte(p,addr,&value);
     arm_write_usr_register(p, reg, value);
@@ -490,7 +489,7 @@ void Execution_Load_Usr_Byte(arm_core p, uint32_t addr, int reg){
 
 void Execution_Load_Byte(arm_core p, uint32_t addr, int reg){
     
-    uint32_t value;
+    uint8_t value;
     
     arm_read_byte(p,addr,&value);
     arm_write_register(p, reg, value);
@@ -514,7 +513,7 @@ void Execution_Store_Usr(arm_core p, uint32_t addr, int reg){
 
 void Execution_Store_Usr_Byte(arm_core p, uint32_t addr, int reg){
     
-    uint32_t value;
+    uint8_t value;
     
     value = arm_read_usr_register(p,reg);
     arm_write_byte(p, addr, value);
@@ -522,16 +521,13 @@ void Execution_Store_Usr_Byte(arm_core p, uint32_t addr, int reg){
 
 void Execution_Store_Byte(arm_core p, uint32_t addr, int reg){
     
-    uint32_t value;
+    uint8_t value;
     
     value = arm_read_register(p,reg);
     arm_write_byte(p, addr, value);
 }
 
 void write_load_reg_mem(arm_core p, int adresse, int Rd, int L, int B){
-    uint32_t value_word;
-    uint8_t value_byte;
-
     switch (L){
     case 0:
         switch (B){
@@ -540,8 +536,6 @@ void write_load_reg_mem(arm_core p, int adresse, int Rd, int L, int B){
                 break;
             case 1: // Store unsigned byte
                 Execution_Store_Byte(p, adresse, Rd);
-                value_byte = arm_read_register(p, Rd);
-                arm_write_byte(p, adresse, value_byte);
                 break;
         }
         break;
@@ -552,8 +546,6 @@ void write_load_reg_mem(arm_core p, int adresse, int Rd, int L, int B){
                 break;
             case 1: // Load unsigned byte
                 Execution_Load_Byte(p, adresse, Rd);
-                arm_read_byte(p, adresse, &value_byte);
-                arm_write_register(p, Rd, value_byte);
                 break;
         }
         break;
