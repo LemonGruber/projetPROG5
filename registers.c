@@ -86,7 +86,6 @@ int current_mode_has_spsr(registers r) {
         default:
             retour = 0;
     }
-    
     return retour;
 }
 
@@ -239,7 +238,7 @@ uint32_t read_spsr(registers r) {
 void write_register(registers r, uint8_t reg, uint32_t value) {
     switch(get_mode(r)){
         case FIQ:
-            if ((8 <= reg && reg < 14) || reg == 17){
+            if ((8 <= reg && reg <= 14) || reg == 17){
                 acces_ecriture_registre_FIQ(r, reg, value);
                 break;
             }
