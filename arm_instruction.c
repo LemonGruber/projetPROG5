@@ -25,6 +25,11 @@ Contact: Guillaume.Huard@imag.fr
 #include "arm_constants.h"
 #include "util.h"
 
+/**
+ * @param p les differents parametres utiles pour la memoire sous forme de structure arm_core
+ * @return 0 si tout vas bien 1 si non ou un message d'erreur de type int
+ * @brief decode une instruction
+ */
 static int arm_execute_instruction(arm_core p) {
     uint32_t ins;
     int result;
@@ -62,7 +67,7 @@ static int arm_execute_instruction(arm_core p) {
                         case 0:
                             if (bit_24 == 1 && bit_23 == 0 && bit_20 == 0)
                             {             
-                                // Miscellaneous instruction
+                                // Miscellaneous instruction /MRS
                                 result = arm_miscellaneous(p,ins);
                             }
                             else
@@ -76,7 +81,7 @@ static int arm_execute_instruction(arm_core p) {
                                 case 0:
                                     if (bit_24 == 1 && bit_23 == 0 && bit_20 == 0)
                                     {
-                                        // Miscellaneous instruction
+                                        // Miscellaneous instruction/ MSR
                                         result = arm_miscellaneous(p,ins);
                                     }
                                     else 
@@ -94,7 +99,7 @@ static int arm_execute_instruction(arm_core p) {
                                     }
                                     else
                                     {
-                                        arm_load_store(p,ins);
+                                         result = arm_load_store(p,ins);
 
                                     } 
                                     break;
@@ -111,7 +116,7 @@ static int arm_execute_instruction(arm_core p) {
                                 result = UNDEFINED_INSTRUCTION ;
                                 break;
                             case 1:
-                                // Move immeditate to status register
+                                // Move immeditate to status register MSR
                                 // #TODO créer la fonction ?
                                 break;
                         }

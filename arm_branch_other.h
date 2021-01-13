@@ -25,33 +25,34 @@ Contact: Guillaume.Huard@imag.fr
 
 /**
  * @file arm_branch_other.h
- * @author G.Huard, Vincent, Yann
- * @date 06/01/2021
+ * @author G.Huard, Vincent, Yann, Damien
+ * @date 13/01/2021
  * @brief gere les fonctions de branchement, les miscellaneous, et les coprocessor other 
  */
+
 #include <stdint.h>
 #include "arm_core.h"
 
 /**
- * @param p les information machine sous forme de structure de arm_core
+ * @param p les informations machine sous forme de structure de arm_core
  * @param ins l'instruction en type uint32_t
- * @return 0 si tout va bien 1 si non
- * @brief gere toute les fonctions de branchement "simple"
+ * @return 0 si tout va bien 1 si non ou une constante d'erreur de type int 
+ * @brief gere toutes les fonctions de branchement "simple"
  */
 int arm_branch(arm_core p, uint32_t ins);
 
 /**
  * @param p les information machine sous forme de structure de arm_core
  * @param ins l'instruction en type uint32_t
- * @return 0 si tout va bien 1 si non
- * @brief gere toutes les fonction au niveau coprocesseur sauf, celle de load et store
+ * @return 0 si tout va bien 1 si non ou une constante d'erreur de type int 
+ * @brief gere toutes les fonctions au niveau coprocesseur sauf, celle de load et store
  */
 int arm_coprocessor_others_swi(arm_core p, uint32_t ins);
 
 /**
- * @param p les information machine sous forme de structure de arm_core
+ * @param p les informations machines sous forme de structure de arm_core
  * @param ins l'instruction en type uint32_t
- * @return 0 si tout va bien 1 si non de type int
+ * @return 0 si tout va bien 1 si non ou une constante d'erreur de type int 
  * @brief gere les fonctions miscellaneous
  */
 int arm_miscellaneous(arm_core p, uint32_t ins);

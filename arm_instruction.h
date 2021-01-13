@@ -22,17 +22,28 @@ Contact: Guillaume.Huard@imag.fr
 */
 #ifndef __ARM_INSTRUCTION_H__
 #define __ARM_INSTRUCTION_H__
+
+/**
+ * @file arm_instruction.c
+ * @author G.Huard, Vincent, Damien, Yann
+ * @date 13/01/2021
+ * @brief decode les instructions pas a pas (sans calculer)
+ */
 #include "arm_core.h"
 
-
+/**
+ * @param p les informations machine sous forme de structure de arm_core
+ * @return 0 si tout va bien 1 si non ou une constante d'erreur en int
+ * @brief permet d'avancer d'un pas dans les instructions du programme
+ */
 int arm_step(arm_core p);
 
 /**
- * @param p les information machine sous forme de structure de arm_core
+ * @param p les informations machine sous forme de structure de arm_core
  * @param ins instruction en cours d'exécution
- * @param retour booleen de type char (0 si la condition est fausse 1 si elle est vrai et 2 si c'est une condition spécial) de type pointeur de char
- * @return 0 si tout vas bien 1 si non de type int
- * @brief verifier si la condition est respecter ou non
+ * @param retour booleen de type char (0 si la condition est fausse 1 si elle est vrai et 2 si c'est une condition special) de type pointeur de char
+ * @return 0 si tout va bien 1 si non ou une constante d'erreur en int
+ * @brief verifie si la condition est respecter ou non
  */
 int cond_fonct (arm_core p, uint32_t ins, char *retour);
 

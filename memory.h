@@ -22,26 +22,33 @@ Contact: Guillaume.Huard@imag.fr
 */
 #ifndef __MEMORY_H__
 #define __MEMORY_H__
+
+/**
+ * @file memory.h
+ * @author G.Huard, Vincent, Damien
+ * @date 13/01/2021
+ * @brief gestion de la memoire (lecture, creation, modif)
+ */
+
 #include <stdint.h>
 #include <sys/types.h>
 
 #include <stdlib.h>
 #include <stdio.h>
 
-typedef enum {LSL, LSR} type_shift; 
-typedef enum {OR, AND} logique; 
 /**
- * @file memory.h
- * @author Guillame, Vincent
- * @date 18/12/2020
- * @brief gestion de la memoire (lecture, creation, modif)
+ * @enum type_shift
+ * @brief le type de shift a faire LSL decalage a gauche, LSR decalage a droite
  */
+typedef enum {LSL, LSR} type_shift; 
+
+
 typedef struct memory_data *memory;
 
 /**
  * @param size la taille de la memoire de type size_t
  * @param is_big_endian si les valeurs de la memoire sont en big endian ou pas
- * @return une memoire cree et initialiser
+ * @return une memoire cree et initialise
  * @brief permet d'allouer la taille necessaire pour la memoire
  */
 memory memory_create(size_t size, int is_big_endian);
@@ -59,37 +66,30 @@ size_t memory_get_size(memory mem);
  */
 void memory_destroy(memory mem);
 
-/* All these functions perform a read/write access to a byte/half/word data at
- * address a in mem. The result is respectively taken from or stored to the
- * parameter value. The access is made using the given endianess (be == 1 for a
- * big endian access and be == 0 for a little endian access).
- * The return value indicates a succes (0) or a failure (-1).
- */
-
 /**
  * @param mem la memoire de la forme de structure memory
  * @param address une adresse memoire de type uint32_t
- * @param value une valeur de type uint8_t 
+ * @param value la valeur a l'addresse memoire de type uint8_t 
  * @return 1 si la valeur n'a pas pu etre recuperer 0 si non
- * @brief recuper une valeur sur 8 bytes dans la memoire
+ * @brief recupere une valeur sur 8 bytes dans la memoire
  */
 int memory_read_byte(memory mem, uint32_t address, uint8_t *value);
 
 /**
  * @param mem la memoire de la forme de structure memory
  * @param address une adresse memoire de type uint32_t
- * @param value une valeur de type uint16_t 
+ * @param value la valeur a l'addresse memoire de type uint16_t 
  * @return 1 si la valeur n'a pas pu etre recuperer 0 si non
- * @brief recuper une valeur sur 16 bytes dans la memoire
+ * @brief recupere une valeur sur 16 bytes dans la memoire
  */
 int memory_read_half(memory mem, uint32_t address, uint16_t *value);
 
 /**
  * @param mem la memoire de la forme de structure memory
  * @param address une adresse memoire de type uint32_t
- * @param value une valeur de type uint32_t 
+ * @param value la valeur a l'addresse memoire de type uint32_t 
  * @return 1 si la valeur n'a pas pu etre recuperer 0 si non
- * @brief recuper une valeur sur 32 bytes dans la memoire
+ * @brief recupere une valeur sur 32 bytes dans la memoire
  */
 int memory_read_word(memory mem, uint32_t address, uint32_t *value);
 
@@ -129,7 +129,7 @@ void afficher_memoire(memory m);
 /**
  * @param m la memoire sous forme de structure memory
  * @param address l'addresse de la memoire pour laquelle on veux acceder de type uint32_t
- * @param retour la valeur de retour, soit la valeur a l'address memoire avec le decalage de type uint21_t
+ * @param retour la valeur de retour, soit la valeur a l'address memoire avec le decalage de type pointeur de uint32_t
  * @param deccalage la valeur de decalage de type int
  * @param LS le type de decalage (a gauche ou a droite) de type type_shift
  * @brief permet d'acceder a la valeur de la memoire a une addresse donner avec le decalage requis
