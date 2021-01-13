@@ -278,7 +278,7 @@ int arm_load_store(arm_core p, uint32_t ins) {
 
 int arm_load_store_multiple(arm_core p, uint32_t ins) {
     
-    int S, W, L, P, U, PC, CondValid, j, bit_reg, sys;
+    int S, W, L, P, U, PC, j, bit_reg, sys;
     uint32_t cond, Rn, start_address, end_address, addr_Rn;
     int sum = 0, i;
     
@@ -298,9 +298,6 @@ int arm_load_store_multiple(arm_core p, uint32_t ins) {
     {
         return UNDEFINED_INSTRUCTION;
     }
-    
-    //vérification si la condition est passé ou non
-    CondValid = ConditionPassed(p, cond);
     
     //nombre de registre de la liste
     for (i = 0; i<=15; i++)
@@ -332,7 +329,7 @@ int arm_load_store_multiple(arm_core p, uint32_t ins) {
     }
     j=0;
     
-    if (CondValid && W)
+    if (W)
     {
         if (U)  // U différencie le mode increment et decrement et donc la valeur de modification de Rn
         {
@@ -409,53 +406,6 @@ int arm_load_store_multiple(arm_core p, uint32_t ins) {
 int arm_coprocessor_load_store(arm_core p, uint32_t ins) {
     /* Not implemented */
     return UNDEFINED_INSTRUCTION;
-}
-
-int ConditionPassed(arm_core p, uint32_t cond) {
-    
-    int bit_Z, bit_N, bit_C, bit_V;
-    uint32_t Reg_CPSR = arm_read_cpsr(p);
-    
-    bit_N = Reg_CPSR >> 31 & 1;
-    bit_Z = Reg_CPSR >> 30 & 1;
-    bit_C = Reg_CPSR >> 29 & 1;
-    bit_V = Reg_CPSR >> 28 & 1;
-    
-    switch(cond){
-      case 0x0:
-        return bit_Z;
-      case 0x1:
-        return !bit_Z;
-      case 0x2:
-        return bit_C;
-      case 0x3:
-        return !bit_C;
-      case 0x4:
-        return bit_N;
-      case 0x5:
-        return !bit_N;
-      case 0x6:
-        return bit_V;
-      case 0x7:
-        return !bit_V;
-      case 0x8:
-        return (bit_C && !bit_Z); 
-      case 0x9:
-        return (!bit_C || bit_Z);
-      case 0xA:
-        return bit_N == bit_V;
-      case 0xB:
-        return bit_N != bit_V;
-      case 0xC:
-        return (!bit_Z && (bit_N == bit_V));
-      case 0xD:
-        return (bit_Z && (bit_N != bit_V));
-      case 0xE:
-        return 1;
-      case 0xF:
-        return 0;
-    }
-    return -1;   
 }
 
 int Est_Sys_Ou_User(arm_core p){
