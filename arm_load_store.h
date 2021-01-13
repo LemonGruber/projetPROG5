@@ -44,7 +44,7 @@ int arm_load_store(arm_core p, uint32_t ins);
  * @param p les differents parametres utiles pour la memoire sous forme de structure arm_core
  * @param ins l'instrcution en bits sur 32 bit de type uint32_t
  * @return 0 si tout va bien 1 si non ou une erreur de type int
- * @biref permet de faire des load et/ou des store sur la memoire d'une valeur donner celon l'instruction
+ * @brief permet de faire des load et/ou des store sur la memoire d'une valeur donner celon l'instruction
  * soit dupliquer des valeurs
  */
 int arm_load_store_multiple(arm_core p, uint32_t ins);
@@ -112,7 +112,7 @@ void Execution_Store_Usr(arm_core p, uint32_t addr, int reg);
  * @param Rd registre a utiliser pour l'opération en cours
  * @param L bit L de l'instruction
  * @param B bit B de l'instruction
- * @return Fait le load ou le store sans rien regarder d'autre (factorisation du code)
+ * @brief Fait le load ou le store sans rien regarder d'autre (factorisation du code)
  */
 void write_load_reg_mem(arm_core p, int adresse, int Rd, int L, int B);
 
