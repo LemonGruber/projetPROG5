@@ -3,8 +3,8 @@
 
 fonction_2:
     add r0,r0,r0
-    mov pc,lr
-
+    mov r6, lr
+    mov pc, lr
 
 fonction_1:
     add r0,r0,r0
@@ -24,9 +24,11 @@ tant_que:
     bne tant_que
 
 fintantque:
+    mov r4, r0
     #sauvegarde des resgistre
     bl fonction_1
     #retour
+    mov r7, pc
     add r0,r0,r0
 
 end:
