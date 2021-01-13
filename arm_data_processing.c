@@ -78,7 +78,6 @@ int arm_data_processing_shift(arm_core p, uint32_t ins) {
         break;
         case 2 :
            //ASR
-            printf("\n ASR \n");
             val_2 = asr(val_2,(uint8_t)decalage);
         break;
         case 1 :
@@ -88,7 +87,6 @@ int arm_data_processing_shift(arm_core p, uint32_t ins) {
         break;
         case 3 :
             //ROR
-            printf("\n ROR \n");
             val_2 = ror(val_2, (uint8_t)decalage);
         break;
         //Tout les cas sont traiter donc le default n'est pas obligatoire
@@ -383,7 +381,6 @@ void verif_zero (uint32_t val,uint8_t *Z_flag)
 
 void different (uint32_t val_1,long int val_2, uint8_t *C_flag)
 {
-    printf("vla_1 : %d, vl_2 : %ld \n",val_1,val_2);
     //Si la valeur theorique et la valeur reel calculer sont differente
     if (val_1 != val_2)
     {

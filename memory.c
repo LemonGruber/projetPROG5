@@ -217,20 +217,7 @@ void acces_mem_address (memory m,uint32_t address, uint32_t *retour,int deccalag
 
 void ecriture_mem_address (memory m, uint32_t address, uint32_t value)
 {
-    int retour;
-    if (address *8 < memory_get_size(m))
-    {
-        m->data[(address * 8)/32] =  m->data[(address * 8)/32] | value;
-        retour = 0;
-    }
-    else 
-    {
-       retour = 1;
-    }
-    if (retour)
-    {
-        printf("ok");
-    }
+    m->data[(address * 8)/32] =  m->data[(address * 8)/32] | value;
 }
 
 void appliquer_mask (memory m, uint32_t mask, uint32_t address)

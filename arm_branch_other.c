@@ -35,8 +35,6 @@ int arm_branch(arm_core p, uint32_t ins) {
     
     uint32_t val_pc;
     
-    char retour = 1;
-    
     val_pc = arm_read_register(p,15);
     
     if (L == 1)
@@ -52,11 +50,8 @@ int arm_branch(arm_core p, uint32_t ins) {
     else
     {
         //B/BL
-        if (retour == 1)
-        {
-            val_pc = val_pc + ((immediat_signe | (0xFF << 24)) << 2);
-            arm_write_register(p,15,val_pc);
-        }
+        val_pc = val_pc + ((immediat_signe | (0xFF << 24)) << 2);
+        arm_write_register(p,15,val_pc);
     }
     return 0;
 }
