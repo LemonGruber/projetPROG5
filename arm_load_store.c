@@ -58,14 +58,6 @@ int arm_load_store(arm_core p, uint32_t ins) {
             offset_8 = ins & 0b1111; // offset au lie de Rm
         }
         
-        if (P == 0)
-        {
-            if (W == 1)
-            {
-                return UNDEFINED_INSTRUCTION; //UNPREDICTABLE;
-            }
-        }
-        
         if (U == 1) // operation +
         {
             adresse = arm_read_register(p, Rn) + offset_8;
@@ -74,20 +66,24 @@ int arm_load_store(arm_core p, uint32_t ins) {
         {
             adresse = arm_read_register(p, Rn) - offset_8;
         }
+
+        if (W == 1)
+        {
+            if (P == 0)
+            {
+                return UNDEFINED_INSTRUCTION; //UNPREDICTABLE;
+            }
+            else // P == 1
+            {
+                arm_write_register(p, Rn, adresse);
+            }
+        }
         
         if (L == 0 && S == 0 && H == 1)
         {
             //store halfword
-            if (P == 1 && W == 1)
-            {
-                arm_write_register(p, Rn, adresse);
-            }
             value_half = arm_read_register(p, Rd);
             arm_write_half(p, arm_read_register(p, Rn), value_half);
-            if (P ==0 && W == 0)
-            {
-                arm_write_register(p, Rn, adresse);
-            }
         }
         else if(L == 0 && S == 1)
         {
@@ -98,53 +94,29 @@ int arm_load_store(arm_core p, uint32_t ins) {
         else if (L == 1 && S == 0 && H == 1)
         {
             //load halfword unsigned
-            if (P == 1 && W == 1)
-            {
-                arm_write_register(p, Rn, adresse);
-            }
             arm_read_half(p,arm_read_register(p, Rn), &value_half);
             arm_write_register(p, Rd, value_half);
-            if (P ==0 && W == 0)
-            {
-                arm_write_register(p, Rn, adresse);
-            }
         }
         else if (L == 1 && S == 1 && H == 0)
         {
             //load byte signed
-            if (P == 1 && W == 1)
-            {
-                arm_write_register(p, Rn, adresse);
-            }
             arm_read_byte(p,arm_read_register(p, Rn), &value_byte);
             arm_write_register(p, Rd, value_byte);
-            if (P ==0 && W == 0)
-            {
-                arm_write_register(p, Rn, adresse);
-            }
         }
         else if (L == 1 && S == 1 && H == 1)
         {
             //load halfword signed
-            if (P == 1 && W == 1)
-            {
-                arm_write_register(p, Rn, adresse);
-            }
             arm_read_half(p,arm_read_register(p, Rn), &value_half);
             arm_write_register(p, Rd, value_byte);
-            if (P ==0 && W == 0)
-            {
-                arm_write_register(p, Rn, adresse);
-            }
         }
         else
         {
             // On aurait pas du être ici
         }
        
-        if (P == 1)
+        if (P == 0)
         {
-            if (W == 1) // Mise à jour des registres
+            if (W == 0) // Mise à jour des registres
             {
                 arm_write_register(p, Rn, adresse);
             }
@@ -242,7 +214,7 @@ int arm_load_store(arm_core p, uint32_t ins) {
                 {
                     if (B == 1) //Load unsigned byte user acces
                     {
-                        Execution_Load_Usr_Byte(p, arm_read_register(p, Rn), Rd);
+                        Execution_Load_Usr_Byte(p, arm_read_usr_register(p, Rn), Rd);
                     }
                     else        // Load word user acces
                     {
@@ -253,11 +225,11 @@ int arm_load_store(arm_core p, uint32_t ins) {
                 {
                     if (B == 1) // Store unsigned byte user acces
                     {
-                        Execution_Store_Usr_Byte(p, arm_read_register(p, Rn), Rd);
+                        Execution_Store_Usr_Byte(p, arm_read_usr_register(p, Rn), Rd);
                     }
                     else        //Store word user acces
                     {
-                        Execution_Store_Usr(p, arm_read_register(p, Rn), Rd);
+                        Execution_Store_Usr(p, arm_read_usr_register(p, Rn), Rd);
                     }
                 }
             }
@@ -279,7 +251,7 @@ int arm_load_store(arm_core p, uint32_t ins) {
 int arm_load_store_multiple(arm_core p, uint32_t ins) {
     
     int S, W, L, P, U, PC, j, bit_reg, sys;
-    uint32_t cond, Rn, start_address, end_address, addr_Rn;
+    uint32_t Rn, start_address, end_address, addr_Rn;
     int sum = 0, i;
     
     // Bit récupéré dans l'instruction
@@ -289,7 +261,6 @@ int arm_load_store_multiple(arm_core p, uint32_t ins) {
     W = ins >> 21 & 1;
     L = ins >> 20 & 1;
     PC = ins >> 15 & 1;
-    cond = ins >> 28 & 0xF;
     Rn = ins >> 16 & 0xF;
     
     //On regarde si on est en mode system ou user
