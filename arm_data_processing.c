@@ -199,6 +199,8 @@ int opcode (arm_core p,uint32_t val_1, uint32_t val_2, uint32_t ins,uint32_t *va
     //initilaises les flags a 0
     *flags = 0;
     
+    char est_sub = 0;
+    
     if (cpsr_read)
     {
         C_flag = 0;
@@ -218,26 +220,25 @@ int opcode (arm_core p,uint32_t val_1, uint32_t val_2, uint32_t ins,uint32_t *va
         break;
         case 2 :
             //SUB (soustration)
-            valeur_reel = val_2 - val_1;
-            valeur_theorique = val_2_int - val_1_int;
-        
-            different(valeur_reel,valeur_theorique,&C_flag);
-            v_flag_sub (valeur_reel,val_1,val_2,&V_flag,C_flag);
+            est_sub = 1;
+            valeur_reel = val_2 + (~val_1+1);
+            valeur_theorique = val_2_int + (~val_1_int+1);
+            
+            v_flag_add (valeur_reel,val_1,val_2,&V_flag,C_flag);
         break;
         case 3:   
             //RSB (soustraction inverser)
-            valeur_reel = val_1 - val_2;
-            valeur_theorique = val_1_int - val_2_int;
+            est_sub = 1;
+            valeur_reel = val_1 + (~val_2+1);
+            valeur_theorique = val_1_int + (~val_2_int+1);
 
-            different(valeur_reel,valeur_theorique,&C_flag);
-            v_flag_sub (valeur_reel,val_1,val_2,&V_flag,C_flag);
+            v_flag_add (valeur_reel,val_1,val_2,&V_flag,C_flag);
         break;
         case 4 :
             //ADD (addition)
             valeur_reel = val_1 + val_2;
             valeur_theorique = val_1_int + val_2_int;
 
-            different(valeur_reel,valeur_theorique,&C_flag);
             v_flag_add (valeur_reel,val_1,val_2,&V_flag,C_flag);
         break;
         case 5 :
@@ -250,19 +251,21 @@ int opcode (arm_core p,uint32_t val_1, uint32_t val_2, uint32_t ins,uint32_t *va
         break;
         case 6 :
             //SBC (soutraction avec carry)
-            valeur_reel = val_2 - val_1;
-            valeur_theorique = val_2 - val_2 - (~(C_flag & 1));
+            est_sub = 1;
+            valeur_reel = val_2 + (~val_1+1);
+            valeur_theorique = val_2_int + (~val_1_int+1) - (~(C_flag & 1));
 
             different(valeur_reel,valeur_theorique,&C_flag);
-            v_flag_sub (valeur_reel,val_1,val_2,&V_flag,C_flag);
+            v_flag_add (valeur_reel,val_1,val_2,&V_flag,C_flag);
         break;
         case 7 :
             //RSC (soustraction inverse avec carry)
-            valeur_reel = val_1 - val_2;
-            valeur_theorique = val_1 - val_2 - (~(C_flag & 1));
+            est_sub = 1;
+            valeur_reel = val_1 + (~val_2+1);
+            valeur_theorique = val_1_int + (~val_2_int+1) - (~(C_flag & 1));
 
             different(valeur_reel,valeur_theorique,&C_flag);
-            v_flag_sub (valeur_reel,val_1,val_2,&V_flag,C_flag);
+            v_flag_add (valeur_reel,val_1,val_2,&V_flag,C_flag);
         break;
         case 8 :
             //TST (test ...
@@ -280,11 +283,12 @@ int opcode (arm_core p,uint32_t val_1, uint32_t val_2, uint32_t ins,uint32_t *va
         break;
         case 10 :
             //CMP (comparer ...
-            valeur_reel = val_1 - val_2;
-            valeur_theorique = val_1_int - val_2_int;
+            est_sub = 1;
+            valeur_reel = val_1 + (~val_2+1);
+            valeur_theorique = val_1_int + (~val_2_int+1);
 
             different(valeur_reel,valeur_theorique,&C_flag);
-            v_flag_sub (valeur_reel,val_1,val_2,&V_flag,C_flag);
+            v_flag_add (valeur_reel,val_1,val_2,&V_flag,C_flag);
             
             *est_comparaison = 1;
         break;
@@ -329,6 +333,7 @@ int opcode (arm_core p,uint32_t val_1, uint32_t val_2, uint32_t ins,uint32_t *va
         //pas besoin de default tout les cas sont traiter
     }
     
+   
     //Si les flags n'on pas ete calculer  
     if (ok_flag == 0)
     {
@@ -339,12 +344,25 @@ int opcode (arm_core p,uint32_t val_1, uint32_t val_2, uint32_t ins,uint32_t *va
         verif_zero(valeur_reel,&Z_flag);                 //Calcul de Z
         negatif(valeur_reel,&N_flag);                    //Calcul de N
         
+        if (est_sub)
+        {
+            if (C_flag == 1)
+            {
+                C_flag = 0;
+            }
+            else
+            {
+                C_flag = 1;
+            }
+        }
+        
         //Ecriture des flags
-        *flags = *flags | V_flag;
-        *flags = *flags | (C_flag << 1);
-        *flags = *flags | (Z_flag << 2);
-        *flags = *flags | (N_flag << 3);
+        *flags = *flags | ((V_flag) & 1);
+        *flags = *flags | ((C_flag & 1) << 1);
+        *flags = *flags | ((Z_flag & 1) << 2);
+        *flags = *flags | ((N_flag & 1) << 3);
     }
+    
     
     //Preparation de la valeur de retour
     *val = valeur_reel;
@@ -365,6 +383,7 @@ void verif_zero (uint32_t val,uint8_t *Z_flag)
 
 void different (uint32_t val_1,long int val_2, uint8_t *C_flag)
 {
+    printf("vla_1 : %d, vl_2 : %ld \n",val_1,val_2);
     //Si la valeur theorique et la valeur reel calculer sont differente
     if (val_1 != val_2)
     {
@@ -398,29 +417,6 @@ void v_flag_add (uint32_t valeur_reel, uint32_t val_1, uint32_t val_2, uint8_t *
     {
         //On fait un ou exclusif entre la dernier retenu (1) et la retenue sortante (carry)
         *V_flag = *V_flag | (1 ^ (C_flag & 1)); 
-    }
-    else
-    {
-        //Si non :
-        //On fait un ou exclusif entre la dernier retenu (0) et la retenue sortante (carry)
-        *V_flag = 0 ^ (C_flag & 1);
-    }
-}
-
-void v_flag_sub (uint32_t valeur_reel, uint32_t val_1, uint32_t val_2,uint8_t *V_flag, uint8_t C_flag)
-{
-    
-    //Si le bit de poid fort est pareil entre les deux operande et que le bit de poid fort du resultat est a 1
-    if ((((val_2 >> 31) & 1) == ((val_1 >> 31) & 1)) && (((valeur_reel >> 31) & 1) == 1))
-    {
-        //On fait un ou exclusif entre la dernier retenu (1) et la retenue sortante (carry)
-        *V_flag = 1 ^ (C_flag & 1);
-    }
-    //Si non si le bit de poid fort est different entre les deux operande et que le bit de poid fort du resultat est a 0
-    else if ((((val_2 >> 31) & 1) != ((val_1 >> 31) & 1)) && (((valeur_reel >> 31) & 1) == 0))
-    {
-        //On fait un ou exclusif entre la dernier retenu (1) et la retenue sortante (carry)
-        *V_flag = 1 ^ (C_flag & 1);
     }
     else
     {
