@@ -27,33 +27,33 @@ Contact: Guillaume.Huard@imag.fr
  * @file arm_branch_other.h
  * @author G.Huard, Vincent, Yann, Damien
  * @date 13/01/2021
- * @brief gere les fonctions de branchement, les miscellaneous, et les coprocessor other 
+ * @brief Gere les fonctions de branch, les miscellaneous, et les coprocessor other.
  */
 
 #include <stdint.h>
 #include "arm_core.h"
 
 /**
- * @param p les informations machine sous forme de structure de arm_core
- * @param ins l'instruction en type uint32_t
- * @return 0 si tout va bien 1 si non ou une constante d'erreur de type int 
- * @brief gere toutes les fonctions de branchement "simple"
+ * @param p Les informations machine sous forme de structure de arm_core
+ * @param ins L'instruction en type uint32_t
+ * @return 0 si tout va bien 1 si non ou une constante d'erreur de type int.
+ * @brief Gere toutes les fonctions de branchement "simple"
  */
 int arm_branch(arm_core p, uint32_t ins);
 
 /**
- * @param p les information machine sous forme de structure de arm_core
- * @param ins l'instruction en type uint32_t
- * @return 0 si tout va bien 1 si non ou une constante d'erreur de type int 
- * @brief gere toutes les fonctions au niveau coprocesseur sauf, celle de load et store
+ * @param p Les information machine sous forme de structure de arm_core
+ * @param ins L'instruction en type uint32_t
+ * @return 0 si tout va bien 1 si non ou une constante d'erreur de type int.
+ * @brief Gere les fonctions d'interruptions systemes (dans le present cas, uniquement swi 0xEF123456).
  */
 int arm_coprocessor_others_swi(arm_core p, uint32_t ins);
 
 /**
- * @param p les informations machines sous forme de structure de arm_core
- * @param ins l'instruction en type uint32_t
- * @return 0 si tout va bien 1 si non ou une constante d'erreur de type int 
- * @brief gere les fonctions miscellaneous
+ * @param p Les informations machines sous forme de structure de arm_core
+ * @param ins L'instruction en type uint32_t
+ * @return 0 si tout va bien 1 si non ou une constante d'erreur de type int. 
+ * @brief Gere les fonctions diverses (miscellaneous)
  */
 int arm_miscellaneous(arm_core p, uint32_t ins);
 

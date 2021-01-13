@@ -31,7 +31,7 @@ Contact: Guillaume.Huard@imag.fr
 
 /**
  * @struct arm_core_data
- * @brief permet de stocker le nombre de cycle, le registre et la memoire
+ * @brief permet de stocker le nombre de cycle, les registres et la memoire
  */
 struct arm_core_data {
     uint32_t cycle_count;

@@ -27,7 +27,7 @@ Contact: Guillaume.Huard@imag.fr
  * @file memory.h
  * @author G.Huard, Vincent, Damien
  * @date 13/01/2021
- * @brief gestion de la memoire (lecture, creation, modif)
+ * @brief Gestion de la memoire (lecture, creation, modif).
  */
 
 #include <stdint.h>
@@ -38,7 +38,8 @@ Contact: Guillaume.Huard@imag.fr
 
 /**
  * @enum type_shift
- * @brief le type de shift a faire LSL decalage a gauche, LSR decalage a droite
+ * @brief Le type de shift a faire LSL decalage a gauche, 
+ * LSR decalage a droite.
  */
 typedef enum {LSL, LSR} type_shift; 
 
@@ -46,109 +47,123 @@ typedef enum {LSL, LSR} type_shift;
 typedef struct memory_data *memory;
 
 /**
- * @param size la taille de la memoire de type size_t
- * @param is_big_endian si les valeurs de la memoire sont en big endian ou pas
- * @return une memoire cree et initialise
- * @brief permet d'allouer la taille necessaire pour la memoire
+ * @param size La taille de la memoire; de type size_t
+ * @param is_big_endian Si les valeurs de la memoire sont en 
+ * big endian ou pas
+ * @return Une memoire cree et initialise.
+ * @brief Permet d'allouer la taille necessaire pour la memoire.
  */
 memory memory_create(size_t size, int is_big_endian);
 
 /**
- * @param mem la memoire de la forme de structure memory
- * @return la taille de la memoire
- * @brief permet de recuperer la taille de la memoire
+ * @param mem La memoire de la forme de structure memory
+ * @return La taille de la memoire.
+ * @brief Permet de recuperer la taille de la memoire.
  */
 size_t memory_get_size(memory mem); 
 
 /**
- * @param mem la memoire de la forme de structure memory
- * @brief libere la memoire prise par mem
+ * @param mem La memoire de la forme de structure memory
+ * @brief Libere la memoire prise par mem.
  */
 void memory_destroy(memory mem);
 
 /**
- * @param mem la memoire de la forme de structure memory
- * @param address une adresse memoire de type uint32_t
- * @param value la valeur a l'addresse memoire de type uint8_t 
- * @return 1 si la valeur n'a pas pu etre recuperer 0 si non
- * @brief recupere une valeur sur 8 bytes dans la memoire
+ * @param mem La memoire de la forme de structure memory
+ * @param address Une adresse memoire; de type uint32_t
+ * @param value La valeur a l'addresse memoire; de type uint8_t 
+ * @return Retourne 1 si la valeur n'a pas pu etre recuperer, et 
+ * 0 sinon.
+ * @brief Recupere une valeur sur 8 bytes dans la memoire.
  */
 int memory_read_byte(memory mem, uint32_t address, uint8_t *value);
 
 /**
- * @param mem la memoire de la forme de structure memory
- * @param address une adresse memoire de type uint32_t
- * @param value la valeur a l'addresse memoire de type uint16_t 
- * @return 1 si la valeur n'a pas pu etre recuperer 0 si non
- * @brief recupere une valeur sur 16 bytes dans la memoire
+ * @param mem La memoire de la forme de structure memory
+ * @param address Une adresse memoire; de type uint32_t
+ * @param value La valeur a l'addresse memoire; de type uint16_t 
+ * @return Retourne 1 si la valeur n'a pas pu etre recuperer, et 
+ * 0 sinon.
+ * @brief Recupere une valeur sur 16 bytes dans la memoire.
  */
 int memory_read_half(memory mem, uint32_t address, uint16_t *value);
 
 /**
- * @param mem la memoire de la forme de structure memory
- * @param address une adresse memoire de type uint32_t
- * @param value la valeur a l'addresse memoire de type uint32_t 
- * @return 1 si la valeur n'a pas pu etre recuperer 0 si non
- * @brief recupere une valeur sur 32 bytes dans la memoire
+ * @param mem La memoire de la forme de structure memory
+ * @param address Une adresse memoire; de type uint32_t
+ * @param value La valeur a l'addresse memoire; de type uint32_t 
+ * @return Retourne 1 si la valeur n'a pas pu etre recuperer, et 
+ * 0 sinon.
+ * @brief Recupere une valeur sur 32 bytes dans la memoire.
  */
 int memory_read_word(memory mem, uint32_t address, uint32_t *value);
 
 /**
- * @param mem la memoire de la forme de structure memory
- * @param address une adresse memoire de type uint32_t
- * @param value une valeur de type uint8_t
- * @return 1 si la valeur n'a pas pu etre recuperer 0 si non
- * @brief ecrire dans la memoire la valeur donner a l'adresse donner
+ * @param mem La memoire de la forme de structure memory
+ * @param address Une adresse memoire; de type uint32_t
+ * @param value Une valeur; de type uint8_t
+ * @return Retourne 1 si la valeur n'a pas pu etre recuperer, et 
+ * 0 sinon.
+ * @brief Ecrire dans la memoire la valeur donnee a l'adresse donnee.
  */
 int memory_write_byte(memory mem, uint32_t address, uint8_t value);
 
 /**
- * @param mem la memoire de la forme de structure memory
- * @param address une adresse memoire de type uint32_t
- * @param value une valeur de type uint16_t
- * @return 1 si la valeur n'a pas pu etre recuperer 0 si non
- * @brief ecrire dans la memoire la valeur donner a l'adresse donner
+ * @param mem La memoire de la forme de structure memory
+ * @param address Une adresse memoire; de type uint32_t
+ * @param value Une valeur; de type uint16_t
+ * @return Retourne 1 si la valeur n'a pas pu etre recuperer, et 
+ * 0 sinon.
+ * @brief Ecrire dans la memoire la valeur donnee a l'adresse donnee.
  */
 int memory_write_half(memory mem, uint32_t address, uint16_t value);
 
 /**
- * @param mem la memoire de la forme de structure memory
- * @param address une adresse memoire de type uint32_t
- * @param value une valeur de type uint32_t
- * @return 1 si la valeur n'a pas pu etre recuperer 0 si non
- * @brief ecrire dans la memoire la valeur donner a l'adresse donner
+ * @param mem La memoire de la forme de structure memory
+ * @param address Une adresse memoire; de type uint32_t
+ * @param value Une valeur; de type uint32_t
+ * @return Retourne 1 si la valeur n'a pas pu etre recuperer, et 
+ * 0 sinon.
+ * @brief Ecrire dans la memoire la valeur donnee a l'adresse donnee.
  */
 int memory_write_word(memory mem, uint32_t address, uint32_t value);
 
 /**
- * @param m la memoire sous forme de structure memory
- * @brief fonction qui peremet d'afficher la memoire (debug)
+ * @param m La memoire sous forme de structure memory
+ * @brief Fonction qui permet d'afficher la memoire non vide (debug).
  */
 void afficher_memoire(memory m);
 
 /**
- * @param m la memoire sous forme de structure memory
- * @param address l'addresse de la memoire pour laquelle on veux acceder de type uint32_t
- * @param retour la valeur de retour, soit la valeur a l'address memoire avec le decalage de type pointeur de uint32_t
- * @param deccalage la valeur de decalage de type int
- * @param LS le type de decalage (a gauche ou a droite) de type type_shift
- * @brief permet d'acceder a la valeur de la memoire a une addresse donner avec le decalage requis
+ * @param m La memoire sous forme de structure memory
+ * @param address L'addresse de la memoire pour laquelle on veux 
+ * acceder; de type uint32_t
+ * @param retour La valeur de retour, soit la valeur a l'address 
+ * memoire avec le decalage; de type pointeur de uint32_t
+ * @param deccalage La valeur de decalage; de type int
+ * @param LS Le type de decalage (a gauche ou a droite); de type 
+ * type_shift
+ * @brief Permet d'acceder a la valeur de la memoire a une addresse 
+ * donnee avec le decalage requis.
  */
 void acces_mem_address (memory m,uint32_t address, uint32_t *retour,int deccalage, type_shift LS);
 
 /**
- * @param m la memoire sous forme de structure memory
- * @param address l'addresse de la memoire pour laquelle on veux ecrire de type uint32_t
- * @param value la valeur que l'on veux ecrire en memoire
- * @brief permet d'ecrire en memoire a une adresse donner
+ * @param m La memoire sous forme de structure memory
+ * @param address L'addresse de la memoire pour laquelle on veux 
+ * ecrire; de type uint32_t
+ * @param value La valeur que l'on veux ecrire en memoire
+ * @brief Permet d'ecrire en memoire a une adresse donnee.
  */
 void ecriture_mem_address (memory m, uint32_t address, uint32_t value);
 
 /**
- * @param m la memoire sous forme de structure memory
- * @param mask un masque de type uint32_t
- * @param address l'adresse memoire a laquelle apliquer le masque sur sa valeur.
- * @brief permet d'apliquer un masque a une valeur dans la memoire a une adresse donnee
+ * @param m La memoire sous forme de structure memory
+ * @param mask Un masque; de type uint32_t
+ * @param address L'adresse memoire a laquelle apliquer le masque 
+ * sur sa valeur.
+ * @brief Permet d'apliquer un masque a une valeur dans la memoire a 
+ * une adresse donnee.
  */
 void appliquer_mask (memory m, uint32_t mask, uint32_t address);
 #endif

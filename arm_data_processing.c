@@ -365,7 +365,7 @@ void verif_zero (uint32_t val,uint8_t *Z_flag)
 
 void different (uint32_t val_1,long int val_2, uint8_t *C_flag)
 {
-    //Si la valeur theorique et la valeur reel calculer son differente
+    //Si la valeur theorique et la valeur reel calculer sont differente
     if (val_1 != val_2)
     {
         //Alors :

@@ -25,7 +25,7 @@ Contact: Guillaume.Huard@imag.fr
 
 /**
  * @struct registers_data
- * @brief stock tout les registe en brut sauf les registres que l'on ne connais pas (attention)
+ * @brief stock tous les registres en brut
  */
 struct registers_data {
     

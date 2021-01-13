@@ -32,18 +32,18 @@ Contact: Guillaume.Huard@imag.fr
 #include "arm_core.h"
 
 /**
- * @param p les informations machine sous forme de structure de arm_core
- * @return 0 si tout va bien 1 si non ou une constante d'erreur en int
- * @brief permet d'avancer d'un pas dans les instructions du programme
+ * @param p Les informations machine sous forme de structure de arm_core
+ * @return Retourne 0 si tout va bien sinon 1 ou une constante d'erreur en int.
+ * @brief Permet d'avancer d'un pas dans les instructions du programme.
  */
 int arm_step(arm_core p);
 
 /**
- * @param p les informations machine sous forme de structure de arm_core
- * @param ins instruction en cours d'exécution
- * @param retour booleen de type char (0 si la condition est fausse 1 si elle est vrai et 2 si c'est une condition special) de type pointeur de char
- * @return 0 si tout va bien 1 si non ou une constante d'erreur en int
- * @brief verifie si la condition est respecter ou non
+ * @param p Les informations machine sous forme de structure de arm_core
+ * @param ins Instruction en cours d'exécution
+ * @param retour Booleen de type char (0 si la condition est fausse 1 si elle est vrai et 2 si c'est une condition special) de type pointeur de char
+ * @return Retourne 0 si tout va bien, sinon 1 ou une constante d'erreur en int.
+ * @brief Verifie si la condition est respectee ou non.
  */
 int cond_fonct (arm_core p, uint32_t ins, char *retour);
 

@@ -47,7 +47,6 @@ int arm_branch(arm_core p, uint32_t ins) {
     if (cond == 0xF)
     {
         //BLX
-        
         arm_write_register(p,15,val_pc + (immediat_signe & (0xFF << 24) << 2));
     }
     else

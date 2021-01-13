@@ -26,7 +26,7 @@ Contact: Guillaume.Huard@imag.fr
 
 /**
  * @struct memory_data
- * @brief stock la taille, le type et les valeur dans la memoire
+ * @brief stock la taille, le boutisme et les valeurs dans la memoire
  */
 struct memory_data {
     size_t taille;          //Taille de la memoire
