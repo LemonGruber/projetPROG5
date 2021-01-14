@@ -26,7 +26,7 @@ Contact: Guillaume.Huard@imag.fr
 
 /**
  * @struct memory_data
- * @brief stock la taille, le type et les valeur dans la memoire
+ * @brief stock la taille, le boutisme et les valeurs dans la memoire
  */
 struct memory_data {
     size_t taille;          //Taille de la memoire
@@ -57,156 +57,100 @@ void memory_destroy(memory mem) {
 
 int memory_read_byte(memory mem, uint32_t address, uint8_t *value) {
 
-    if (mem->is_big_endian)
+    uint32_t buff;
+    int decalage = 0;
+
+    switch (address % 4)
     {
-        if (address %4   == 0)
-        {
-            *value = mem->data[(address*8) /32] >> 24;
-        }
-        else if (address % 4 == 3)
-        {
-            *value = mem->data[(address*8) /32] >> 0;
-        }
-        else if (address % 4 == 2)
-        {
-            *value = (mem->data[(address*8) /32]) >> 8;
-        }
-        else if (address % 4 == 1)
-        {
-            *value = mem->data[(address*8) /32] >> 16;
-        }
+        case 0 :
+            decalage = 24;
+        break;
+        case 3 :
+            decalage = 0;
+        break;
+        case 2 :
+            decalage = 8;
+        break;
+        case 1 : 
+            decalage = 16;
+        break;
     }
-    else
+    if (!mem->is_big_endian)
     {
-        if (address % 4 == 0)
-        {
-            *value = mem->data[(address*8) /32] >> 0;
-        }
-        else if (address % 4 == 3)
-        {
-            *value = (mem->data[(address*8) /32]) >> 24;
-        }
-        else if (address % 4 == 2)
-        {
-            *value = mem->data[(address*8) /32] >> 16;
-        }
-        else if (address % 4 == 1)
-        {
-            *value = mem->data[(address*8) /32] >> 8;
-        }
+        decalage = 24 - decalage;
     }
-            
-        
+        acces_mem_address (mem,address,&buff,decalage,LSR);
+    
+    *value = buff;           
     return 0;
 }
 
 int memory_read_half(memory mem, uint32_t address, uint16_t *value) {
     *value = 0;
+    
+    uint32_t buff;
     int retour = 0;
-    if (!mem->is_big_endian)
+    
+    uint32_t mask;
+    int decalage;
+    
+     if (address%4 == 0)
     {
-        if (address%4 == 0)
-        {
-            *value = (mem->data[(address*8)/32] << 16) >> 16;
-        }
-        else if (address %4 == 2)
-        {
-            *value = (mem->data[(address*8)/32] >> 16);
-        }
+        decalage = 0;
+        mask = 16;
     }
-    else
+    else if (address %4 == 2)
     {
-        if ( address % 4 == 0)
-        {
-            *value = (mem->data[(address*8)/32] >> 16);
-        }
-        else if (address % 4 == 2)
-        {
-            *value = (mem->data[(address*8)/32] << 16) >> 16;
-        }
+        decalage = 16;
+        mask = 0;
+    }
+    if(mem->is_big_endian)
+    {
+        decalage = 16 - decalage;
     }
         
-    
+    acces_mem_address (mem,address,&buff,decalage,LSR);
+    buff = buff & ~(0xFFFF << mask);
+    *value = buff;
+   
     return retour;
 }
 
 int memory_read_word(memory mem, uint32_t address, uint32_t *value) {
     *value = 0;
     int retour = 0;
-    *value = mem->data[(address*8)/32];
+    acces_mem_address (mem,address,value,0,LSL);
     return retour;
+    
 }
-
-
 
 int memory_write_byte(memory mem, uint32_t address, uint8_t value) {
     uint32_t buff;
-    if (!mem->is_big_endian)
+    
+    int decalage;
+    switch (address % 4)
     {
-        if (address == 0)
-        {
-            buff = value;
-            mem->data[(address*8)/32] = mem->data[(address*8)/32] & ~(0xff);
-            mem->data[(address*8)/32] = mem->data[(address*8)/32] | (buff);
-        }
-        else if (address % 4 == 3)
-        {
-            buff = value;
-            mem->data[(address*8)/32] = mem->data[(address*8)/32] & ~(0xff << 24);
-            mem->data[(address*8)/32] = mem->data[(address*8)/32] | (buff << 24);
-        }
-        else if (address % 4 == 0)
-        { 
-            buff = value;
-            mem->data[(address*8)/32] = mem->data[(address*8)/32] & ~(0xff);
-            mem->data[(address*8)/32] = mem->data[(address*8)/32] | (buff);
-        }
-        else if(address % 4 == 1)
-        {
-            buff = value;
-            mem->data[(address*8)/32] = mem->data[(address*8)/32] & ~(0xff << 8);
-            mem->data[(address*8)/32] = mem->data[(address*8)/32] | (buff << 8);
-        }
-        else if(address % 4 == 2)
-        {
-            buff = value;
-            mem->data[(address*8)/32] = mem->data[(address*8)/32] & ~(0xff << 16);
-            mem->data[(address*8)/32] = mem->data[(address*8)/32] | (buff << 16);
-        }
+        case 0:
+            decalage = 0;  
+        break;
+        case 3 :
+            decalage = 24;  
+        break;
+        case 1 :
+            decalage = 8;  
+        break;
+        case 2 :
+            decalage = 16;
+        break;
     }
-    else
+    if (mem->is_big_endian)
     {
-        if (address == 0)
-        {
-            buff = value;
-            mem->data[(address*8)/32] = mem->data[(address*8)/32] & ~(0xff << 24);
-            mem->data[(address*8)/32] = mem->data[(address*8)/32] | (buff << 24);
-        }
-        else if (address % 4 == 3)
-        {
-            buff = value;
-            mem->data[(address*8)/32] = mem->data[(address*8)/32] & ~(0xff);
-            mem->data[(address*8)/32] = mem->data[(address*8)/32] | (buff);
-        }
-        else if (address % 4 == 0)
-        { 
-            buff = value;
-            mem->data[(address*8)/32] = mem->data[(address*8)/32] & ~(0xff << 24);
-            mem->data[(address*8)/32] = mem->data[(address*8)/32] | (buff << 24);
-        }
-        else if(address % 4 == 1)
-        {
-            buff = value;
-            mem->data[(address*8)/32] = mem->data[(address*8)/32] & ~(0xff << 16);
-            mem->data[(address*8)/32] = mem->data[(address*8)/32] | (buff << 16);
-        }
-        else if(address % 4 == 2)
-        {
-            buff = value;
-            mem->data[(address*8)/32] = mem->data[(address*8)/32] & ~(0xff << 8);
-            mem->data[(address*8)/32] = mem->data[(address*8)/32] | (buff << 8);
-        }
+        decalage = 24-decalage;
     }
+ 
+    buff = value;
+    appliquer_mask (mem,~(0xff << decalage),address);
+    ecriture_mem_address (mem,address,buff << decalage);
     
     return 0;
 }
@@ -214,48 +158,36 @@ int memory_write_byte(memory mem, uint32_t address, uint8_t value) {
 int memory_write_half(memory mem, uint32_t address, uint16_t value) {
     
     uint32_t buff;
-    if (mem->is_big_endian)
+    
+    int decalage;
+    
+  
+    if (address  % 4 == 0)
     {
-        if (address % 4 == 0)
-        {
-            buff = value;
-            buff = buff << 16;
-            mem->data[(address * 8)/32] = buff | (mem->data[(address * 8)/32] & ~(1 << 16));
-        }
-        else if (address  % 4 == 0)
-        {
-            buff = value;
-            buff = buff << 16;
-            mem->data[(address * 8)/32] = buff | (mem->data[(address * 8)/32] & ~(1 << 16));
-        }
-        else if (address % 4 == 2)
-        {
-            mem->data[(address * 8)/32] = value | (mem->data[(address * 8)/32] & 0x00);
-        }
+        decalage = 16;
     }
-    else
+    else if (address % 4 == 2)
     {
-        if (address % 4 == 0)
-        {
-           
-            mem->data[(address * 8)/32] = value | (mem->data[(address * 8)/32] & 0x00);
-        }
-        else if (address % 4 == 2)
-        {
-            buff = value;
-            buff = buff << 16;
-            mem->data[(address * 8)/32] = buff | (mem->data[(address * 8)/32] & ~(1 << 16));
-        }
+        decalage = 0;
     }
-     return 0;
+    if (!mem->is_big_endian)
+    {
+        decalage = 16 - decalage; 
+    }
+    
+    buff = value;
+    appliquer_mask (mem,~(0xFFFF<<decalage),address);
+    ecriture_mem_address (mem,address,buff << decalage);
+   
+    return 0;
 }
 
 int memory_write_word(memory mem, uint32_t address, uint32_t value) {
     int retour = 0;
-    mem->data[(address * 8)/32] = value;
+    appliquer_mask (mem,~(0xFFFFFFFF),address);
+    ecriture_mem_address (mem,address,value);
     return retour;
 }
-
 
 void afficher_memoire(memory m)
 {
@@ -263,7 +195,32 @@ void afficher_memoire(memory m)
     int i = 0;
     for (i = 0; i < m->taille; i++)
     {
-        printf("indice : %d, valeur : %08x \n",i,m->data[i]);
+        if (m->data[i] != 0)
+        {
+            printf("indice : %d, valeur : %08x \n",i,m->data[i]);
+        }
     }
     printf("\n");
+}
+
+void acces_mem_address (memory m,uint32_t address, uint32_t *retour,int deccalage, type_shift LS)
+{
+    if (LS == LSL)
+    {
+        *retour = m->data[(address * 8)/32] << deccalage;
+    }
+    else
+    {
+        *retour = m->data[(address * 8)/32] >> deccalage;
+    }
+}
+
+void ecriture_mem_address (memory m, uint32_t address, uint32_t value)
+{
+    m->data[(address * 8)/32] =  m->data[(address * 8)/32] | value;
+}
+
+void appliquer_mask (memory m, uint32_t mask, uint32_t address)
+{
+    m->data[(address * 8)/32] = m->data[(address * 8)/32] & mask;
 }

@@ -1,5 +1,5 @@
 
-#line 3 "scanner.c"
+#line 3 "lex.yyscanner.c"
 
 #define  YY_INT_ALIGNED short int
 
@@ -108,7 +108,7 @@ typedef unsigned int flex_uint32_t;
 /* Promotes a possibly negative, possibly signed char to an
  *   integer in range [0..255] for use as an array index.
  */
-#define YY_SC_TO_UI(c) ((YY_CHAR) (c))
+#define YY_SC_TO_UI(c) ((YYSCANNER_CHAR) (c))
 
 /* An opaque pointer. */
 #ifndef YY_TYPEDEF_YY_SCANNER_T
@@ -123,8 +123,8 @@ typedef void* yyscan_t;
 #define yyextra yyg->yyextra_r
 #define yyleng yyg->yyleng_r
 #define yytext yyg->yytext_r
-#define yylineno (YY_CURRENT_BUFFER_LVALUE->yy_bs_lineno)
-#define yycolumn (YY_CURRENT_BUFFER_LVALUE->yy_bs_column)
+#define yylineno (YYSCANNER_CURRENT_BUFFER_LVALUE->yy_bs_lineno)
+#define yycolumn (YYSCANNER_CURRENT_BUFFER_LVALUE->yy_bs_column)
 #define yy_flex_debug yyg->yy_flex_debug_r
 
 /* Enter a start condition.  This macro really ought to take a parameter,
@@ -142,7 +142,7 @@ typedef void* yyscan_t;
 #define YY_STATE_EOF(state) (YY_END_OF_BUFFER + state + 1)
 /* Special action meaning "start processing a new file". */
 #define YY_NEW_FILE yyrestart( yyin , yyscanner )
-#define YY_END_OF_BUFFER_CHAR 0
+#define YY_END_OF_BUFFERSCANNER_CHAR 0
 
 /* Size of default input buffer. */
 #ifndef YY_BUF_SIZE
@@ -171,7 +171,7 @@ typedef struct yy_buffer_state *YY_BUFFER_STATE;
 typedef size_t yy_size_t;
 #endif
 
-#define EOB_ACT_CONTINUE_SCAN 0
+#define EOB_ACTSCANNER_CONTINUE_SCAN 0
 #define EOB_ACT_END_OF_FILE 1
 #define EOB_ACT_LAST_MATCH 2
     
@@ -264,13 +264,13 @@ struct yy_buffer_state
  *
  * Returns the top of the stack, or NULL.
  */
-#define YY_CURRENT_BUFFER ( yyg->yy_buffer_stack \
+#define YYSCANNER_CURRENT_BUFFER ( yyg->yy_buffer_stack \
                           ? yyg->yy_buffer_stack[yyg->yy_buffer_stack_top] \
                           : NULL)
 /* Same as previous macro, but useful when we know that the buffer stack is not
  * NULL or when we need an lvalue. For internal use only.
  */
-#define YY_CURRENT_BUFFER_LVALUE yyg->yy_buffer_stack[yyg->yy_buffer_stack_top]
+#define YYSCANNER_CURRENT_BUFFER_LVALUE yyg->yy_buffer_stack[yyg->yy_buffer_stack_top]
 
 void yyrestart ( FILE *input_file , yyscan_t yyscanner );
 void yy_switch_to_buffer ( YY_BUFFER_STATE new_buffer , yyscan_t yyscanner );
@@ -283,7 +283,7 @@ void yypop_buffer_state ( yyscan_t yyscanner );
 static void yyensure_buffer_stack ( yyscan_t yyscanner );
 static void yy_load_buffer_state ( yyscan_t yyscanner );
 static void yy_init_buffer ( YY_BUFFER_STATE b, FILE *file , yyscan_t yyscanner );
-#define YY_FLUSH_BUFFER yy_flush_buffer( YY_CURRENT_BUFFER , yyscanner)
+#define YY_FLUSH_BUFFER yy_flush_buffer( YYSCANNER_CURRENT_BUFFER , yyscanner)
 
 YY_BUFFER_STATE yy_scan_buffer ( char *base, yy_size_t size , yyscan_t yyscanner );
 YY_BUFFER_STATE yy_scan_string ( const char *yy_str , yyscan_t yyscanner );
@@ -312,7 +312,7 @@ void yyfree ( void * , yyscan_t yyscanner );
 	} \
 	YY_CURRENT_BUFFER_LVALUE->yy_at_bol = at_bol; \
 	}
-#define YY_AT_BOL() (YY_CURRENT_BUFFER_LVALUE->yy_at_bol)
+#define YY_AT_BOL() (YYSCANNER_CURRENT_BUFFER_LVALUE->yy_at_bol)
 
 /* Begin user sect3 */
 
@@ -478,8 +478,8 @@ static void add_character_to_error(parser_data_t data, char c) {
         handle_error(data);
     data->buffer[data->len++] = c;
 }
-#line 482 "scanner.c"
-#line 483 "scanner.c"
+#line 482 "lex.yyscanner.c"
+#line 483 "lex.yyscanner.c"
 
 #define INITIAL 0
 
@@ -721,7 +721,7 @@ YY_DECL
 	{
 #line 60 "scanner.l"
 
-#line 725 "scanner.c"
+#line 725 "lex.yyscanner.c"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -815,7 +815,7 @@ YY_RULE_SETUP
 #line 73 "scanner.l"
 ECHO;
 	YY_BREAK
-#line 819 "scanner.c"
+#line 819 "lex.yyscanner.c"
 
 	case YY_END_OF_BUFFER:
 		{

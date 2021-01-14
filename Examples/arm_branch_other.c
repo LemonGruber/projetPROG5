@@ -35,6 +35,8 @@ int arm_branch(arm_core p, uint32_t ins) {
     
     uint32_t val_pc;
     
+    char retour = 1;
+    
     val_pc = arm_read_register(p,15);
     
     if (L == 1)
@@ -45,13 +47,17 @@ int arm_branch(arm_core p, uint32_t ins) {
     if (cond == 0xF)
     {
         //BLX
+        
         arm_write_register(p,15,val_pc + (immediat_signe & (0xFF << 24) << 2));
     }
     else
     {
         //B/BL
-        val_pc = val_pc + ((immediat_signe | (0xFF << 24)) << 2);
-        arm_write_register(p,15,val_pc);
+        if (retour == 1)
+        {
+            val_pc = val_pc + ((immediat_signe | (0xFF << 24)) << 2);
+            arm_write_register(p,15,val_pc);
+        }
     }
     return 0;
 }
@@ -67,23 +73,40 @@ int arm_coprocessor_others_swi(arm_core p, uint32_t ins) {
 }
 
 int arm_miscellaneous(arm_core p, uint32_t ins) {
-    uint8_t bit_21 = get_bit(ins, 21);
-    uint8_t Rd = get_bits(ins, 15, 12);
-    uint32_t value;
-
-    if (bit_21 == 1)
+    
+    uint8_t bit_4_7 = get_bits(ins,7,4);
+    uint8_t bit_21 = get_bit(ins,21);
+    uint8_t bit_22 = get_bit(ins,22);
+    uint8_t Rd = get_bits(ins,15,12);
+    
+    uint32_t valeur;
+    
+    switch (bit_4_7)
     {
-        if (get_bit(ins, 22) == 1)
-        {
-            value = arm_read_register(p, SPSR);
-            arm_write_register(p, Rd, value);
-        }
-        else
-        {
-            value = arm_read_register(p, CPSR);
-            arm_write_register(p, Rd, value);
-        }
-        return value;
+        case 0: 
+            if (bit_21 == 0)
+            {
+                //MSR
+                if (bit_22 == 1)
+                {
+                    //SPSR
+                    valeur = arm_read_register(p,SPSR);
+                    
+                }
+                else
+                {
+                    //CPSR
+                    valeur = arm_read_register(p,CPSR);
+                }
+                arm_write_register(p,Rd,valeur);
+                
+            }
+        break;
+        case 1:
+        break;
+        default:
+        break;
     }
-    return UNDEFINED_INSTRUCTION;
+    
+    return 0;
 }
