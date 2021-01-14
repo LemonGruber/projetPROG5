@@ -71,7 +71,7 @@ int arm_miscellaneous(arm_core p, uint32_t ins) {
     uint8_t Rd = get_bits(ins, 15, 12);
     uint32_t value;
 
-    if (bit_21 == 1)
+    if (bit_21 == 0)
     {
         if (get_bit(ins, 22) == 1)
         {
