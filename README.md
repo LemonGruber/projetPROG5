@@ -31,14 +31,12 @@ in the first lines of Makefile.am, then make clean && make.
 
 The simulator sources are organized as follows (<- denotes dependences) :
 messages : debug and warning messages functions
-        <- nothing
-memory : memory area management with byte/half/word accesses and per access
-         choosable endianess
+      <- nothing
+memory : memory area management with byte/half/word accesses and per access choosable endianess
       <- nothing
 arm_constants : some definitions about arm execution modes
-             <- nothing
-arm_core : arm state management (registers and memory). Provides access to
-           proper registers and memory depending on cpsr content
+         <- nothing
+arm_core : arm state management (registers and memory). Provides access to proper registers and memory depending on cpsr content
         <- memory, trace, arm_constants
 trace : trace infrastructure for memory/registers accesses and processor state
         monitoring. Can be configured using compile-time flags
