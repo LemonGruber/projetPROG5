@@ -3,8 +3,8 @@ An ARM simulator
 
 This is yet another ARM processor simulator
 More precisely, this is an ARMv5 instruction set emulator. Thus, it is neither
-cycle accurate, nor very efficient. It has been designed as a teaching tool,
-with modular sources and memory/processor transactions trace capabilities.
+cycle accurate, nor very efficient. Has been completed from a skeleton program designed by Guillaume Huard (http://polaris.imag.fr/guillaume.huard/).
+
 
 The main program, arm_simulator acts as a gdb server, so a typical use session
 would look like:
