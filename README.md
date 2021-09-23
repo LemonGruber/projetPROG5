@@ -16,14 +16,14 @@ the simulator prints on the screen the ports numbers on which it listens for
 these connections.
 
 To use the simulator, you must connect to it a gdb client:
-arm-elf-gdb
-file Examples/foo (for instance)
-target remote localhost:<port number given by the simulator>
-load
-step
-break 8
-cont
-... and so on
+- arm-elf-gdb
+- file Examples/foo (for instance)
+- target remote localhost:<port number given by the simulator>
+- load
+- step
+- break 8
+- cont
+- ... and so on
 
 Debugging messages and traces outputed by the simulator can be chosen at
 compile-time using compilation flags. Just comment the undesired flags settings
