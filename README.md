@@ -30,37 +30,31 @@ compile-time using compilation flags. Just comment the undesired flags settings
 in the first lines of Makefile.am, then make clean && make.
 
 The simulator sources are organized as follows (<- denotes dependences) :
-messages : debug and warning messages functions
+- messages : debug and warning messages functions
       <- nothing
-memory : memory area management with byte/half/word accesses and per access choosable endianess
+- memory : memory area management with byte/half/word accesses and per access choosable endianess
       <- nothing
-arm_constants : some definitions about arm execution modes
+- arm_constants : some definitions about arm execution modes
          <- nothing
-arm_core : arm state management (registers and memory). Provides access to proper registers and memory depending on cpsr content
+- arm_core : arm state management (registers and memory). Provides access to proper registers and memory depending on cpsr content
         <- memory, trace, arm_constants
-trace : trace infrastructure for memory/registers accesses and processor state
-        monitoring. Can be configured using compile-time flags
+- trace : trace infrastructure for memory/registers accesses and processor state monitoring. Can be configured using compile-time flags
      <- arm_core
-arm_exception : arm exceptions raising module and exception vector provider
+- arm_exception : arm exceptions raising module and exception vector provider
              <- arm_core
-arm_data_processing : specialized decoding functions for data processing
-                      instructions
+- arm_data_processing : specialized decoding functions for data processing instructions
                    <- messages, arm_core, arm_exception
-arm_load_store : specialized decoding functions for load and store instructions
+- arm_load_store : specialized decoding functions for load and store instructions
               <- messages, arm_core, arm_exception
-arm_branch_other : specialized decoding functions for branch and other
-                   miscellaneous instructions
+- arm_branch_other : specialized decoding functions for branch and other miscellaneous instructions
                 <- arm_core, arm_exception
-arm_instruction : arm instruction execution. Does basic decoding (data_proc,
-                  load/store, branch, and so on) and call the matching
-                  specialized decoder
-               <- arm_core, arm_exception, arm_data_processing, arm_load_store,
-                  arm_branch_other
-gdb_protocol : implementation of gdb remote protocol for arm processor
+- arm_instruction : arm instruction execution. Does basic decoding (data_proc, load/store, branch, and so on) and call the matching specialized decoder
+               <- arm_core, arm_exception, arm_data_processing, arm_load_store, arm_branch_other
+- gdb_protocol : implementation of gdb remote protocol for arm processor
             <- messages, trace, arm_core, arm_instruction
-scanner : scanner for gdb packets
+- scanner : scanner for gdb packets
        <- gdb_protocol
-arm_simulator : main simulator that acts as a gdb server
+- arm_simulator : main simulator that acts as a gdb server
              <- arm_core, memory, gdb_scanner, gdb_protocol
-send_irq : small command to send exception to a running simulator
+- send_irq : small command to send exception to a running simulator
         <- nothing
